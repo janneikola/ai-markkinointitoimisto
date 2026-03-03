@@ -524,6 +524,35 @@ input, select, textarea { font-family: var(--font-body); }
 .agent-tile-name { font-size: 12px; font-weight: 500; }
 .agent-tile-status { font-size: 10px; margin-top: 2px; }
 
+/* Agent tile autonomy indicator */
+.agent-tile-autonomy {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    cursor: pointer;
+}
+.agent-tile-autonomy-bar {
+    display: flex;
+    gap: 2px;
+}
+.agent-tile-autonomy-segment {
+    width: 12px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    transition: background 0.3s ease;
+}
+.agent-tile-autonomy-segment.lvl-supervised { background: var(--cyan); }
+.agent-tile-autonomy-segment.lvl-semi { background: var(--orange); }
+.agent-tile-autonomy-segment.lvl-full { background: var(--green); }
+.agent-tile-autonomy-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
 /* Approval queue items */
 .approval-mini-item {
     display: flex;
@@ -1770,6 +1799,196 @@ input, select, textarea { font-family: var(--font-body); }
 }
 
 /* =============================================
+   NEW TASK TRIGGER
+   ============================================= */
+.new-task-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+    color: #0a1628;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition);
+    margin-bottom: 20px;
+    border: none;
+}
+.new-task-trigger:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 0 20px var(--accent-glow);
+}
+
+/* =============================================
+   TASK TRACKING PANEL
+   ============================================= */
+.task-track-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 13px;
+}
+.task-track-item:last-child { border-bottom: none; }
+.task-track-agent { font-size: 11px; color: var(--text-muted); min-width: 90px; }
+.task-track-desc { flex: 1; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.task-track-status {
+    font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px;
+    text-transform: uppercase; white-space: nowrap;
+}
+.task-track-status.received { background: var(--blue-bg); color: var(--blue); }
+.task-track-status.processing { background: var(--orange-bg); color: var(--orange); }
+.task-track-status.done { background: var(--green-bg); color: var(--green); }
+.task-track-time { font-size: 11px; color: var(--text-muted); min-width: 50px; text-align: right; }
+
+/* =============================================
+   COST SUMMARY PANEL
+   ============================================= */
+.cost-summary-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; margin-bottom: 16px;
+}
+.cost-summary-item { text-align: center; }
+.cost-summary-value { font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+.cost-summary-label { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.cost-comparison-bar {
+    display: flex; height: 24px; border-radius: var(--radius-xs); overflow: hidden; margin-bottom: 8px;
+}
+.cost-bar-ai {
+    background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; color: #0a1628;
+}
+.cost-bar-traditional {
+    background: rgba(255, 255, 255, 0.08);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; color: var(--text-muted);
+}
+.cost-agent-breakdown {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px;
+    font-size: 11px; color: var(--text-muted); margin-top: 12px;
+    padding-top: 12px; border-top: 1px solid var(--border-subtle);
+}
+.cost-agent-breakdown span:nth-child(even) { text-align: right; color: var(--text-secondary); }
+
+/* =============================================
+   COMPETITOR DASHBOARD ALERTS
+   ============================================= */
+.competitor-dash-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 0;
+    border-bottom: 1px solid var(--border-subtle); font-size: 13px;
+}
+.competitor-dash-item:last-child { border-bottom: none; }
+.competitor-dash-threat {
+    font-size: 10px; font-weight: 600; padding: 2px 6px;
+    border-radius: 10px; white-space: nowrap;
+}
+.competitor-dash-threat.high { background: var(--red-bg); color: var(--red); }
+.competitor-dash-threat.medium { background: var(--orange-bg); color: var(--orange); }
+.competitor-dash-react-btn {
+    font-size: 11px; padding: 3px 10px; border-radius: var(--radius-xs);
+    background: rgba(163, 230, 53, 0.1); color: var(--accent);
+    border: 1px solid rgba(163, 230, 53, 0.2); cursor: pointer;
+    white-space: nowrap; transition: all var(--transition);
+}
+.competitor-dash-react-btn:hover { background: var(--accent); color: #0a1628; }
+
+/* =============================================
+   FEED COLLABORATION ITEMS
+   ============================================= */
+.feed-collab {
+    display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0;
+}
+.feed-collab-arrow { color: var(--accent); font-size: 12px; }
+.feed-item[data-type="collab"] {
+    background: rgba(163, 230, 53, 0.03); border-radius: var(--radius-xs);
+    padding: 12px 8px; margin: 0 -8px;
+}
+
+/* =============================================
+   ANALYTICS CHAT SHORTCUT
+   ============================================= */
+.analytics-chat-shortcut {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; color: var(--accent-light); cursor: pointer;
+    padding: 2px 8px; border-radius: 10px;
+    background: rgba(163, 230, 53, 0.08);
+    border: 1px solid rgba(163, 230, 53, 0.15);
+    transition: all var(--transition);
+}
+.analytics-chat-shortcut:hover {
+    background: rgba(163, 230, 53, 0.15); border-color: var(--accent);
+}
+
+/* =============================================
+   ALERT SETTINGS
+   ============================================= */
+.alert-setting-row {
+    display: flex; align-items: center; gap: 12px; padding: 10px 0;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.alert-setting-row:last-child { border-bottom: none; }
+.alert-setting-label { flex: 1; font-size: 13px; }
+.alert-setting-label small { display: block; color: var(--text-muted); font-size: 11px; margin-top: 2px; }
+.toggle-switch {
+    position: relative; width: 40px; height: 22px;
+    background: rgba(255, 255, 255, 0.1); border-radius: 11px;
+    cursor: pointer; transition: background 0.3s ease; flex-shrink: 0;
+}
+.toggle-switch.active { background: var(--accent); }
+.toggle-switch::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; background: white;
+    border-radius: 50%; transition: transform 0.3s ease;
+}
+.toggle-switch.active::after { transform: translateX(18px); }
+.alert-threshold-input {
+    width: 70px; background: var(--bg-secondary); border: 1px solid var(--border);
+    border-radius: var(--radius-xs); padding: 4px 8px; color: var(--text-primary);
+    font-size: 12px; text-align: center;
+}
+
+/* =============================================
+   SCHEDULED REPORT BADGE
+   ============================================= */
+.scheduled-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 600; padding: 2px 8px;
+    border-radius: 10px; background: rgba(163, 230, 53, 0.1);
+    color: var(--accent); margin-left: 8px;
+}
+
+/* =============================================
+   AUDIT LOG
+   ============================================= */
+.audit-log-filters {
+    display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; align-items: center;
+}
+.audit-log-filters select {
+    background: var(--bg-secondary); border: 1px solid var(--border);
+    border-radius: var(--radius-xs); padding: 6px 10px;
+    color: var(--text-primary); font-size: 12px; outline: none;
+}
+.audit-log-entry {
+    display: flex; gap: 12px; padding: 10px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 13px; align-items: center;
+}
+.audit-log-entry:last-child { border-bottom: none; }
+.audit-log-time { font-size: 11px; color: var(--text-muted); min-width: 110px; font-variant-numeric: tabular-nums; }
+.audit-log-agent {
+    font-size: 11px; font-weight: 600; padding: 2px 8px;
+    border-radius: 10px; min-width: 80px; text-align: center; white-space: nowrap;
+}
+.audit-log-action {
+    font-size: 11px; padding: 2px 6px; border-radius: 4px;
+    background: var(--bg-card); color: var(--text-muted); white-space: nowrap;
+}
+.audit-log-desc { flex: 1; color: var(--text-secondary); }
+
+/* =============================================
    SEARCH HIGHLIGHTS
    ============================================= */
 .search-highlight {
@@ -1900,6 +2119,9 @@ input, select, textarea { font-family: var(--font-body); }
             <input type="text" placeholder="Hae sisaltoja, agentteja, raportteja..." id="globalSearch" oninput="handleSearch(this.value)">
         </div>
         <div class="header-right">
+            <button class="header-btn" onclick="openAlertSettingsModal()" title="Halytysasetukset">
+                <i data-lucide="bell-ring" style="width:18px;height:18px;"></i>
+            </button>
             <button class="header-btn" id="notifBtn" onclick="toggleNotifications()">
                 <i data-lucide="bell" style="width:18px;height:18px;"></i>
                 <span class="badge" id="notifBadgeCount">4</span>
@@ -1997,6 +2219,12 @@ input, select, textarea { font-family: var(--font-body); }
                 </div>
             </div>
 
+            <!-- New task trigger -->
+            <button class="new-task-trigger reveal reveal-6" onclick="openNewTaskModal()">
+                <i data-lucide="plus-circle" style="width:18px;height:18px;"></i>
+                Anna tehtava agentille
+            </button>
+
             <!-- Agent status tiles + Approval queue -->
             <div class="dashboard-grid">
                 <div class="panel reveal reveal-6">
@@ -2011,6 +2239,10 @@ input, select, textarea { font-family: var(--font-body); }
                                 <div>
                                     <div class="agent-tile-name">Orgaaninen SEO</div>
                                     <div class="agent-tile-status" style="color: var(--green);">Aktiivinen</div>
+                                    <div class="agent-tile-autonomy" onclick="event.stopPropagation(); cycleAutonomy(0)" title="Klikkaa vaihtaaksesi autonomiatasoa">
+                                        <div class="agent-tile-autonomy-bar"><div class="agent-tile-autonomy-segment lvl-semi"></div><div class="agent-tile-autonomy-segment lvl-semi"></div><div class="agent-tile-autonomy-segment"></div></div>
+                                        <span class="agent-tile-autonomy-label" id="autonomyLabel0">Puoliautonomi</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="agent-tile" onclick="navigateTo('agents')">
@@ -2018,6 +2250,10 @@ input, select, textarea { font-family: var(--font-body); }
                                 <div>
                                     <div class="agent-tile-name">Tekninen SEO</div>
                                     <div class="agent-tile-status" style="color: var(--green);">Aktiivinen</div>
+                                    <div class="agent-tile-autonomy" onclick="event.stopPropagation(); cycleAutonomy(1)" title="Klikkaa vaihtaaksesi autonomiatasoa">
+                                        <div class="agent-tile-autonomy-bar"><div class="agent-tile-autonomy-segment lvl-full"></div><div class="agent-tile-autonomy-segment lvl-full"></div><div class="agent-tile-autonomy-segment lvl-full"></div></div>
+                                        <span class="agent-tile-autonomy-label" id="autonomyLabel1">Autonomi</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="agent-tile" onclick="navigateTo('agents')">
@@ -2025,6 +2261,10 @@ input, select, textarea { font-family: var(--font-body); }
                                 <div>
                                     <div class="agent-tile-name">Maksettu some</div>
                                     <div class="agent-tile-status" style="color: var(--orange);">Optimoi</div>
+                                    <div class="agent-tile-autonomy" onclick="event.stopPropagation(); cycleAutonomy(2)" title="Klikkaa vaihtaaksesi autonomiatasoa">
+                                        <div class="agent-tile-autonomy-bar"><div class="agent-tile-autonomy-segment lvl-supervised"></div><div class="agent-tile-autonomy-segment"></div><div class="agent-tile-autonomy-segment"></div></div>
+                                        <span class="agent-tile-autonomy-label" id="autonomyLabel2">Valvottu</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="agent-tile" onclick="navigateTo('agents')">
@@ -2032,6 +2272,10 @@ input, select, textarea { font-family: var(--font-body); }
                                 <div>
                                     <div class="agent-tile-name">SEM (Google Ads)</div>
                                     <div class="agent-tile-status" style="color: var(--green);">Aktiivinen</div>
+                                    <div class="agent-tile-autonomy" onclick="event.stopPropagation(); cycleAutonomy(3)" title="Klikkaa vaihtaaksesi autonomiatasoa">
+                                        <div class="agent-tile-autonomy-bar"><div class="agent-tile-autonomy-segment lvl-semi"></div><div class="agent-tile-autonomy-segment lvl-semi"></div><div class="agent-tile-autonomy-segment"></div></div>
+                                        <span class="agent-tile-autonomy-label" id="autonomyLabel3">Puoliautonomi</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="agent-tile" onclick="navigateTo('agents')">
@@ -2039,6 +2283,10 @@ input, select, textarea { font-family: var(--font-body); }
                                 <div>
                                     <div class="agent-tile-name">Sisaltoagentti</div>
                                     <div class="agent-tile-status" style="color: #b8a060;">Kirjoittaa</div>
+                                    <div class="agent-tile-autonomy" onclick="event.stopPropagation(); cycleAutonomy(4)" title="Klikkaa vaihtaaksesi autonomiatasoa">
+                                        <div class="agent-tile-autonomy-bar"><div class="agent-tile-autonomy-segment lvl-supervised"></div><div class="agent-tile-autonomy-segment"></div><div class="agent-tile-autonomy-segment"></div></div>
+                                        <span class="agent-tile-autonomy-label" id="autonomyLabel4">Valvottu</span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="agent-tile" onclick="navigateTo('agents')">
@@ -2046,6 +2294,10 @@ input, select, textarea { font-family: var(--font-body); }
                                 <div>
                                     <div class="agent-tile-name">Analytiikka</div>
                                     <div class="agent-tile-status" style="color: var(--blue);">Analysoi</div>
+                                    <div class="agent-tile-autonomy" onclick="event.stopPropagation(); cycleAutonomy(5)" title="Klikkaa vaihtaaksesi autonomiatasoa">
+                                        <div class="agent-tile-autonomy-bar"><div class="agent-tile-autonomy-segment lvl-full"></div><div class="agent-tile-autonomy-segment lvl-full"></div><div class="agent-tile-autonomy-segment lvl-full"></div></div>
+                                        <span class="agent-tile-autonomy-label" id="autonomyLabel5">Autonomi</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2116,6 +2368,21 @@ input, select, textarea { font-family: var(--font-body); }
                             </div>
                             <button class="btn-approve" onclick="approveActionSuggestion(0)">Hyvaksy</button>
                         </div>
+                        <div class="approval-reasoning">
+                            <div class="approval-reasoning-toggle" onclick="event.stopPropagation(); toggleReasoning(this)">
+                                <i data-lucide="chevron-right" style="width:14px;height:14px;" class="reasoning-chevron"></i> Miksi?
+                            </div>
+                            <div class="approval-reasoning-content">
+                                <div class="reasoning-step"><span class="reasoning-step-num">1</span><span>Analysoin "pilvipalvelut"-klusterin hakudatan — 35 avainsanaa, yhteensa 8 400 hakua/kk</span></div>
+                                <div class="reasoning-step"><span class="reasoning-step-num">2</span><span>Vertailin: 1 pitka artikkeli vs. 3 kohdennettua — 3 artikkelia kattaa 78% hakuvolyymista</span></div>
+                                <div class="reasoning-step"><span class="reasoning-step-num">3</span><span>Kilpailija CloudTech julkaisi 3 artikkelia samasta aiheesta — reagointi 2 vk sisalla sailyttaa kilpailuedun</span></div>
+                                <div class="reasoning-confidence">
+                                    <span style="font-size:11px;">Luottamustaso:</span>
+                                    <div class="confidence-bar"><div class="confidence-fill" style="width:91%"></div></div>
+                                    <span style="font-size:11px;font-weight:600;color:var(--accent);">91%</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="action-suggestion-item" id="dashSuggestion1" data-searchable>
                         <div class="action-suggestion-header">
@@ -2131,6 +2398,21 @@ input, select, textarea { font-family: var(--font-body); }
                                 <span class="action-suggestion-impact">+12 liiidia/vk</span>
                             </div>
                             <button class="btn-approve" onclick="approveActionSuggestion(1)">Hyvaksy</button>
+                        </div>
+                        <div class="approval-reasoning">
+                            <div class="approval-reasoning-toggle" onclick="event.stopPropagation(); toggleReasoning(this)">
+                                <i data-lucide="chevron-right" style="width:14px;height:14px;" class="reasoning-chevron"></i> Miksi?
+                            </div>
+                            <div class="approval-reasoning-content">
+                                <div class="reasoning-step"><span class="reasoning-step-num">1</span><span>ROAS 4.8x ylittaa tavoitteen (2.5x) selkeasti — kampanja on erittain kannattava</span></div>
+                                <div class="reasoning-step"><span class="reasoning-step-num">2</span><span>A/B-testi osoitti: versio B sai +24% CTR — skaalaus kannattaa tehda talla versiolla</span></div>
+                                <div class="reasoning-step"><span class="reasoning-step-num">3</span><span>Riskianalyysi: budjetti kasvaa 400 €/vk mutta odotettu tuotto +1 200 €/vk liideista</span></div>
+                                <div class="reasoning-confidence">
+                                    <span style="font-size:11px;">Luottamustaso:</span>
+                                    <div class="confidence-bar"><div class="confidence-fill" style="width:87%"></div></div>
+                                    <span style="font-size:11px;font-weight:600;color:var(--accent);">87%</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="action-suggestion-item" id="dashSuggestion2" data-searchable>
@@ -2148,9 +2430,113 @@ input, select, textarea { font-family: var(--font-body); }
                             </div>
                             <button class="btn-approve" onclick="approveActionSuggestion(2)">Hyvaksy</button>
                         </div>
+                        <div class="approval-reasoning">
+                            <div class="approval-reasoning-toggle" onclick="event.stopPropagation(); toggleReasoning(this)">
+                                <i data-lucide="chevron-right" style="width:14px;height:14px;" class="reasoning-chevron"></i> Miksi?
+                            </div>
+                            <div class="approval-reasoning-content">
+                                <div class="reasoning-step"><span class="reasoning-step-num">1</span><span>CPC-analyysi: long-tail avainsanojen keskihinta 0.45 € vs. paakeywordin 2.80 €</span></div>
+                                <div class="reasoning-step"><span class="reasoning-step-num">2</span><span>Hakuvolyymi: 10 avainsanaa yhteensa 1 800 hakua/kk, konversioprosentti 3.2% (historiadatasta)</span></div>
+                                <div class="reasoning-step"><span class="reasoning-step-num">3</span><span>Arvio: CPA laskee 15% (22.40 € → 19.04 €) ja konversiot kasvavat +8 kpl/kk</span></div>
+                                <div class="reasoning-confidence">
+                                    <span style="font-size:11px;">Luottamustaso:</span>
+                                    <div class="confidence-bar"><div class="confidence-fill" style="width:78%"></div></div>
+                                    <span style="font-size:11px;font-weight:600;color:var(--accent);">78%</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="action-suggestion-show-all" onclick="navigateToSuggestions()">
                         Nayta kaikki <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Task tracking panel -->
+            <div class="panel reveal reveal-9">
+                <div class="panel-header">
+                    <span class="panel-title">Tehtavien seuranta</span>
+                    <span style="font-size:12px;color:var(--text-muted);" id="taskTrackCount">3 tehtavaa</span>
+                </div>
+                <div class="panel-body" id="taskTrackList">
+                    <div class="task-track-item">
+                        <span class="task-track-agent">Sisaltoagentti</span>
+                        <span class="task-track-desc">Kirjoita vertailuartikkeli kilpailijoista</span>
+                        <span class="task-track-status processing">Kasittelyssa</span>
+                        <span class="task-track-time">25 min</span>
+                    </div>
+                    <div class="task-track-item">
+                        <span class="task-track-agent">SEO-agentti</span>
+                        <span class="task-track-desc">Analysoi avainsanat "tekoaly markkinointi"</span>
+                        <span class="task-track-status done">Valmis</span>
+                        <span class="task-track-time">2h</span>
+                    </div>
+                    <div class="task-track-item">
+                        <span class="task-track-agent">SEM-agentti</span>
+                        <span class="task-track-desc">Luo uusi kampanja "kevat-tarjous" teemalla</span>
+                        <span class="task-track-status received">Vastaanotettu</span>
+                        <span class="task-track-time">5 min</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cost summary panel -->
+            <div class="panel reveal reveal-9">
+                <div class="panel-header">
+                    <span class="panel-title">Kustannusyhteenveto</span>
+                    <span class="panel-link" onclick="navigateTo('budget')">Budjettiin →</span>
+                </div>
+                <div class="panel-body">
+                    <div class="cost-summary-grid">
+                        <div class="cost-summary-item">
+                            <div class="cost-summary-value" style="color:var(--accent);">599 €</div>
+                            <div class="cost-summary-label">AI-tiimi/kk</div>
+                        </div>
+                        <div class="cost-summary-item">
+                            <div class="cost-summary-value">3 600 €</div>
+                            <div class="cost-summary-label">Mainoskulut</div>
+                        </div>
+                        <div class="cost-summary-item">
+                            <div class="cost-summary-value" style="color:var(--accent-light);">4 199 €</div>
+                            <div class="cost-summary-label">Yhteensa</div>
+                        </div>
+                        <div class="cost-summary-item">
+                            <div class="cost-summary-value" style="color:var(--green);">-65%</div>
+                            <div class="cost-summary-label">vs. toimisto</div>
+                        </div>
+                    </div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px;">AI-tiimi (4 199 €) vs. perinteinen toimisto (12 000 €)</div>
+                    <div class="cost-comparison-bar">
+                        <div class="cost-bar-ai" style="width:35%;">4 199 €</div>
+                        <div class="cost-bar-traditional" style="width:65%;">12 000 €</div>
+                    </div>
+                    <div class="cost-agent-breakdown">
+                        <span>Orgaaninen SEO</span><span>~100 €</span>
+                        <span>Tekninen SEO</span><span>~80 €</span>
+                        <span>Maksettu some</span><span>~120 €</span>
+                        <span>SEM</span><span>~100 €</span>
+                        <span>Sisaltoagentti</span><span>~120 €</span>
+                        <span>Analytiikka</span><span>~79 €</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Competitor alerts panel -->
+            <div class="panel reveal reveal-9">
+                <div class="panel-header">
+                    <span class="panel-title">Kilpailijahalytykset</span>
+                    <span class="panel-link" onclick="navigateTo('competitors')">Kilpailija-radar →</span>
+                </div>
+                <div class="panel-body">
+                    <div class="competitor-dash-item">
+                        <span class="competitor-dash-threat high">Korkea</span>
+                        <span style="flex:1;color:var(--text-secondary);"><strong>CloudTech Finland</strong> julkaisi 3 artikkelia "pilvipalvelut"-aiheesta</span>
+                        <button class="competitor-dash-react-btn" onclick="reactToCompetitor(0)">Reagoi</button>
+                    </div>
+                    <div class="competitor-dash-item">
+                        <span class="competitor-dash-threat medium">Keski</span>
+                        <span style="flex:1;color:var(--text-secondary);"><strong>DigiFlow Agency</strong> kaynnisti LinkedIn-mainoskampanjan</span>
+                        <button class="competitor-dash-react-btn" onclick="reactToCompetitor(1)">Reagoi</button>
                     </div>
                 </div>
             </div>
@@ -2159,6 +2545,9 @@ input, select, textarea { font-family: var(--font-body); }
             <div class="panel reveal reveal-9">
                 <div class="panel-header">
                     <span class="panel-title">Aktiviteettisyote</span>
+                    <span class="analytics-chat-shortcut" onclick="openAnalyticsChat()">
+                        <i data-lucide="message-circle" style="width:12px;height:12px;"></i> Kysy analytiikalta
+                    </span>
                 </div>
                 <div class="panel-body">
                     <div class="feed-filters">
@@ -2168,6 +2557,7 @@ input, select, textarea { font-family: var(--font-body); }
                         <button class="feed-filter" onclick="filterFeed(this, 'ads')"><i data-lucide="zap" style="width:14px;height:14px;"></i> Mainonta</button>
                         <button class="feed-filter" onclick="filterFeed(this, 'analytics')"><i data-lucide="bar-chart-3" style="width:14px;height:14px;"></i> Analytiikka</button>
                         <button class="feed-filter" onclick="filterFeed(this, 'tech')"><i data-lucide="wrench" style="width:14px;height:14px;"></i> Tekninen</button>
+                        <button class="feed-filter" onclick="filterFeed(this, 'collab')"><i data-lucide="git-merge" style="width:14px;height:14px;"></i> Yhteistyo</button>
                     </div>
                     <div id="activityFeed">
                         <div class="feed-item" data-type="seo" data-searchable>
@@ -2195,6 +2585,15 @@ input, select, textarea { font-family: var(--font-body); }
                             <span class="feed-icon"><i data-lucide="wrench" style="width:14px;height:14px;"></i></span>
                             <span class="feed-text"><strong>Tekninen SEO</strong> havaitsi ja korjasi 3 rikkinaista linkkia sivustolla — 301-uudelleenohjaukset lisatty</span>
                         </div>
+                        <div class="feed-item" data-type="collab" data-searchable>
+                            <span class="feed-time">12:30</span>
+                            <span class="feed-collab">
+                                <i data-lucide="search" style="width:14px;height:14px;color:var(--blue);"></i>
+                                <span class="feed-collab-arrow">\u2192</span>
+                                <i data-lucide="file-text" style="width:14px;height:14px;color:#b8a060;"></i>
+                            </span>
+                            <span class="feed-text"><strong>SEO → Sisalto</strong> lahetti sisaltobriefin: "Pilvipalveluiden kustannusoptimointi" (3 avainsanaa, tavoite 2 000 sanaa)</span>
+                        </div>
                         <div class="feed-item" data-type="ads" data-searchable>
                             <span class="feed-time">12:10</span>
                             <span class="feed-icon"><i data-lucide="coins" style="width:14px;height:14px;"></i></span>
@@ -2204,6 +2603,15 @@ input, select, textarea { font-family: var(--font-body); }
                             <span class="feed-time">11:45</span>
                             <span class="feed-icon"><i data-lucide="file-text" style="width:14px;height:14px;"></i></span>
                             <span class="feed-text"><strong>Sisaltoagentti</strong> loi sisaltobriefin: "SaaS-markkinoinnin ROI" — odottaa hyvaksyntaa</span>
+                        </div>
+                        <div class="feed-item" data-type="collab" data-searchable>
+                            <span class="feed-time">11:30</span>
+                            <span class="feed-collab">
+                                <i data-lucide="bar-chart-3" style="width:14px;height:14px;color:var(--blue);"></i>
+                                <span class="feed-collab-arrow">\u2192</span>
+                                <i data-lucide="zap" style="width:14px;height:14px;color:var(--orange);"></i>
+                            </span>
+                            <span class="feed-text"><strong>Analytiikka → Meta Ads</strong> jakoi insightin: "LinkedIn-yleiso konvertoi 2.3x paremmin kuin Instagram" — kampanjabudjetti paivitetty</span>
                         </div>
                         <div class="feed-item" data-type="seo" data-searchable>
                             <span class="feed-time">11:20</span>
@@ -3026,12 +3434,24 @@ input, select, textarea { font-family: var(--font-body); }
              VIEW: REPORTS
              ============================ -->
         <div class="view" id="view-reports">
-            <h1 class="page-title">Raportit</h1>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+                <div style="display:flex;align-items:center;gap:8px;">
+                    <h1 class="page-title" style="margin-bottom:0;">Raportit</h1>
+                    <span class="scheduled-badge" id="scheduledBadge" style="display:none;">
+                        <i data-lucide="clock" style="width:10px;height:10px;"></i>
+                        <span id="scheduledBadgeText"></span>
+                    </span>
+                </div>
+                <button class="btn btn-primary" onclick="openScheduleReportModal()">
+                    <i data-lucide="calendar-clock" style="width:14px;height:14px;display:inline;vertical-align:middle;margin-right:4px;"></i> Ajasta raportti
+                </button>
+            </div>
 
             <div class="tabs">
                 <div class="tab active" onclick="switchReportTab(this, 'weekly')">Viikkoraportit</div>
                 <div class="tab" onclick="switchReportTab(this, 'monthly')">Kuukausiraportit</div>
                 <div class="tab" onclick="switchReportTab(this, 'suggestions')">Toimenpide-ehdotukset</div>
+                <div class="tab" onclick="switchReportTab(this, 'audit')">Auditointiloki</div>
             </div>
 
             <div id="reportTabWeekly">
@@ -3193,6 +3613,54 @@ input, select, textarea { font-family: var(--font-body); }
                             <button class="btn-approve" onclick="approveActionSuggestion(5, true)">Hyvaksy ehdotus</button>
                         </div>
                     </div>
+                </div>
+            </div>
+
+            <div id="reportTabAudit" style="display:none;">
+                <div class="audit-log-filters">
+                    <select id="auditAgentFilter" onchange="filterAuditLog()">
+                        <option value="all">Kaikki agentit</option>
+                        <option value="seo">Orgaaninen SEO</option>
+                        <option value="tech">Tekninen SEO</option>
+                        <option value="meta">Maksettu some</option>
+                        <option value="sem">SEM</option>
+                        <option value="content">Sisaltoagentti</option>
+                        <option value="analytics">Analytiikka</option>
+                    </select>
+                    <select id="auditActionFilter" onchange="filterAuditLog()">
+                        <option value="all">Kaikki toiminnot</option>
+                        <option value="create">Luonti</option>
+                        <option value="optimize">Optimointi</option>
+                        <option value="report">Raportointi</option>
+                        <option value="fix">Korjaus</option>
+                        <option value="analyze">Analyysi</option>
+                    </select>
+                    <span style="flex:1;"></span>
+                    <button class="btn btn-outline btn-sm" onclick="exportAuditLog()">
+                        <i data-lucide="download" style="width:14px;height:14px;display:inline;vertical-align:middle;"></i> Vie CSV
+                    </button>
+                </div>
+                <div id="auditLogEntries">
+                    <div class="audit-log-entry" data-agent="seo" data-action="analyze"><span class="audit-log-time">3.3.2026 14:32</span><span class="audit-log-agent" style="background:var(--blue-bg);color:var(--blue);">SEO</span><span class="audit-log-action">Analyysi</span><span class="audit-log-desc">Avainsanatutkimus kaynnistetty: "pilvipalvelut"-klusteri, 35 avainsanaa</span></div>
+                    <div class="audit-log-entry" data-agent="content" data-action="create"><span class="audit-log-time">3.3.2026 14:15</span><span class="audit-log-agent" style="background:rgba(184,160,96,0.15);color:#b8a060;">Sisalto</span><span class="audit-log-action">Luonti</span><span class="audit-log-desc">Artikkeli julkaistu: "Pilvipalveluiden tietoturva 2026" — 2 340 sanaa</span></div>
+                    <div class="audit-log-entry" data-agent="meta" data-action="optimize"><span class="audit-log-time">3.3.2026 13:58</span><span class="audit-log-agent" style="background:var(--orange-bg);color:var(--orange);">Meta Ads</span><span class="audit-log-action">Optimointi</span><span class="audit-log-desc">Kampanjabudjetti optimoitu: 15% siirretty parhaiten toimivaan mainosjoukoon</span></div>
+                    <div class="audit-log-entry" data-agent="analytics" data-action="report"><span class="audit-log-time">3.3.2026 13:30</span><span class="audit-log-agent" style="background:var(--blue-bg);color:var(--blue);">Analytiikka</span><span class="audit-log-action">Raportointi</span><span class="audit-log-desc">Viikkoraportti generoitu: orgaaninen liikenne +12%, konversioaste 3.2%</span></div>
+                    <div class="audit-log-entry" data-agent="tech" data-action="fix"><span class="audit-log-time">3.3.2026 12:45</span><span class="audit-log-agent" style="background:var(--green-bg);color:var(--green);">Tekninen</span><span class="audit-log-action">Korjaus</span><span class="audit-log-desc">3 rikkinaista linkkia korjattu automaattisesti — 301-uudelleenohjaukset</span></div>
+                    <div class="audit-log-entry" data-agent="sem" data-action="optimize"><span class="audit-log-time">3.3.2026 12:10</span><span class="audit-log-agent" style="background:var(--orange-bg);color:var(--orange);">SEM</span><span class="audit-log-action">Optimointi</span><span class="audit-log-desc">5 uutta negatiivista avainsanaa lisatty — saasto 120 €/kk</span></div>
+                    <div class="audit-log-entry" data-agent="seo" data-action="analyze"><span class="audit-log-time">3.3.2026 11:20</span><span class="audit-log-agent" style="background:var(--blue-bg);color:var(--blue);">SEO</span><span class="audit-log-action">Analyysi</span><span class="audit-log-desc">Kilpailija-analyysi valmis: Competitor X julkaisi 4 uutta artikkelia</span></div>
+                    <div class="audit-log-entry" data-agent="tech" data-action="optimize"><span class="audit-log-time">3.3.2026 10:55</span><span class="audit-log-agent" style="background:var(--green-bg);color:var(--green);">Tekninen</span><span class="audit-log-action">Optimointi</span><span class="audit-log-desc">Core Web Vitals: LCP parani 2.8s → 1.9s etusivulla</span></div>
+                    <div class="audit-log-entry" data-agent="analytics" data-action="analyze"><span class="audit-log-time">3.3.2026 10:00</span><span class="audit-log-agent" style="background:var(--blue-bg);color:var(--blue);">Analytiikka</span><span class="audit-log-action">Analyysi</span><span class="audit-log-desc">Liikennepiikki havaittu: LinkedIn-postaus 12 400 nayttoa, 340 klikkausta</span></div>
+                    <div class="audit-log-entry" data-agent="meta" data-action="optimize"><span class="audit-log-time">2.3.2026 16:00</span><span class="audit-log-agent" style="background:var(--orange-bg);color:var(--orange);">Meta Ads</span><span class="audit-log-action">Optimointi</span><span class="audit-log-desc">Heikko mainosjoukko pysaytetty — saasto 45 €/pv</span></div>
+                    <div class="audit-log-entry" data-agent="content" data-action="create"><span class="audit-log-time">2.3.2026 15:30</span><span class="audit-log-agent" style="background:rgba(184,160,96,0.15);color:#b8a060;">Sisalto</span><span class="audit-log-action">Luonti</span><span class="audit-log-desc">Sisaltobrief luotu: "B2B-markkinoinnin trendit 2026" — lahetetty hyvaksyntaan</span></div>
+                    <div class="audit-log-entry" data-agent="seo" data-action="create"><span class="audit-log-time">2.3.2026 10:00</span><span class="audit-log-agent" style="background:var(--blue-bg);color:var(--blue);">SEO</span><span class="audit-log-action">Luonti</span><span class="audit-log-desc">Meta-kuvaukset optimoitu 12 sivulle — CTR-arvio +0.3%</span></div>
+                    <div class="audit-log-entry" data-agent="tech" data-action="fix"><span class="audit-log-time">2.3.2026 08:00</span><span class="audit-log-agent" style="background:var(--green-bg);color:var(--green);">Tekninen</span><span class="audit-log-action">Korjaus</span><span class="audit-log-desc">Sitemap.xml paivitetty automaattisesti — 4 uutta sivua lisatty</span></div>
+                    <div class="audit-log-entry" data-agent="sem" data-action="analyze"><span class="audit-log-time">1.3.2026 14:15</span><span class="audit-log-agent" style="background:var(--orange-bg);color:var(--orange);">SEM</span><span class="audit-log-action">Analyysi</span><span class="audit-log-desc">Hakutermianalyysi: 3 uutta konvertoivaa hakutermia loydetty</span></div>
+                    <div class="audit-log-entry" data-agent="analytics" data-action="report"><span class="audit-log-time">1.3.2026 09:00</span><span class="audit-log-agent" style="background:var(--blue-bg);color:var(--blue);">Analytiikka</span><span class="audit-log-action">Raportointi</span><span class="audit-log-desc">Kuukausiraportti helmikuu generoitu — kaikki KPI:t positiiviset</span></div>
+                    <div class="audit-log-entry" data-agent="meta" data-action="create"><span class="audit-log-time">28.2.2026 16:30</span><span class="audit-log-agent" style="background:var(--orange-bg);color:var(--orange);">Meta Ads</span><span class="audit-log-action">Luonti</span><span class="audit-log-desc">Uusi kampanja "Kevat Lead Gen" luotu — budjetti 500 €/vk</span></div>
+                    <div class="audit-log-entry" data-agent="content" data-action="create"><span class="audit-log-time">28.2.2026 14:00</span><span class="audit-log-agent" style="background:rgba(184,160,96,0.15);color:#b8a060;">Sisalto</span><span class="audit-log-action">Luonti</span><span class="audit-log-desc">4 LinkedIn-postausta ajastettu viikon 9 kalenteriin</span></div>
+                    <div class="audit-log-entry" data-agent="seo" data-action="analyze"><span class="audit-log-time">28.2.2026 10:00</span><span class="audit-log-agent" style="background:var(--blue-bg);color:var(--blue);">SEO</span><span class="audit-log-action">Analyysi</span><span class="audit-log-desc">Viikoittainen positioraportti: 45 avainsanaa Top 10, 12 uutta nousijaa</span></div>
+                    <div class="audit-log-entry" data-agent="tech" data-action="optimize"><span class="audit-log-time">27.2.2026 15:00</span><span class="audit-log-agent" style="background:var(--green-bg);color:var(--green);">Tekninen</span><span class="audit-log-action">Optimointi</span><span class="audit-log-desc">Kuvien lazy loading lisatty 24 sivulle — sivulataus -0.4s</span></div>
+                    <div class="audit-log-entry" data-agent="sem" data-action="optimize"><span class="audit-log-time">27.2.2026 11:00</span><span class="audit-log-agent" style="background:var(--orange-bg);color:var(--orange);">SEM</span><span class="audit-log-action">Optimointi</span><span class="audit-log-desc">Mainostekstien A/B-testi kaynnistetty: 3 varianttia "pilvipalvelut"-kampanjaan</span></div>
                 </div>
             </div>
         </div>
@@ -3446,6 +3914,160 @@ input, select, textarea { font-family: var(--font-body); }
             <button class="modal-close" onclick="closeReportModalForce()">✕</button>
         </div>
         <div class="modal-body" id="reportModalBody"></div>
+    </div>
+</div>
+
+<!-- NEW TASK MODAL -->
+<div class="modal-overlay" id="newTaskModal" onclick="closeNewTaskModal(event)">
+    <div class="modal" onclick="event.stopPropagation()" style="max-width:520px;">
+        <div class="modal-header">
+            <h2>Anna tehtava agentille</h2>
+            <button class="modal-close" onclick="closeNewTaskModalForce()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Valitse agentti</label>
+                <select class="form-input" id="newTaskAgent">
+                    <option value="">— Valitse agentti —</option>
+                    <option value="Orgaaninen SEO">Orgaaninen SEO</option>
+                    <option value="Tekninen SEO">Tekninen SEO</option>
+                    <option value="Maksettu some">Maksettu some</option>
+                    <option value="SEM (Google Ads)">SEM (Google Ads)</option>
+                    <option value="Sisaltoagentti">Sisaltoagentti</option>
+                    <option value="Analytiikka">Analytiikka</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tehtavan kuvaus</label>
+                <textarea class="form-input" id="newTaskDescription" rows="4" placeholder="Kuvaile tehtava, jonka haluat agentin suorittavan..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Prioriteetti</label>
+                <select class="form-input" id="newTaskPriority">
+                    <option value="Normaali">Normaali</option>
+                    <option value="Korkea">Korkea</option>
+                    <option value="Matala">Matala</option>
+                </select>
+            </div>
+            <button class="new-task-trigger" onclick="submitNewTask()" style="width:100%;justify-content:center;margin-bottom:0;">
+                <i data-lucide="send" style="width:16px;height:16px;"></i>
+                Laheta tehtava
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ALERT SETTINGS MODAL -->
+<div class="modal-overlay" id="alertSettingsModal" onclick="closeAlertSettingsModal(event)">
+    <div class="modal" onclick="event.stopPropagation()" style="max-width:560px;">
+        <div class="modal-header">
+            <h2>Halytysasetukset</h2>
+            <button class="modal-close" onclick="closeAlertSettingsModalForce()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom:16px;">
+                <div style="font-size:13px;font-weight:600;margin-bottom:8px;">Yleiset halytykset</div>
+                <div class="alert-setting-row">
+                    <div class="alert-setting-label">ROAS laskee alle rajan<small>Ilmoita kun ROAS &lt; kynnysarvo</small></div>
+                    <input class="alert-threshold-input" value="3.0" type="number" step="0.1">
+                    <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                </div>
+                <div class="alert-setting-row">
+                    <div class="alert-setting-label">Budjetti ylittaa rajan<small>Ilmoita kun kaytetty &gt; X% budjetista</small></div>
+                    <input class="alert-threshold-input" value="80" type="number">
+                    <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                </div>
+                <div class="alert-setting-row">
+                    <div class="alert-setting-label">Sivustovirheet havaittu<small>Ilmoita kun virheita &gt; kynnysarvo</small></div>
+                    <input class="alert-threshold-input" value="5" type="number">
+                    <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                </div>
+                <div class="alert-setting-row">
+                    <div class="alert-setting-label">Kilpailijan uusi sisalto<small>Ilmoita kun kilpailija julkaisee sisaltoa</small></div>
+                    <input class="alert-threshold-input" value="" disabled>
+                    <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                </div>
+            </div>
+            <div style="margin-bottom:16px;">
+                <div style="font-size:13px;font-weight:600;margin-bottom:8px;">Agenttikohtaiset halytykset</div>
+                <div class="alert-setting-row">
+                    <div class="alert-setting-label">Orgaaninen SEO<small>Positiot, avainsanat, liikenne</small></div>
+                    <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                </div>
+                <div class="alert-setting-row">
+                    <div class="alert-setting-label">Tekninen SEO<small>Virheet, nopeus, Core Web Vitals</small></div>
+                    <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                </div>
+                <div class="alert-setting-row">
+                    <div class="alert-setting-label">Maksettu some<small>ROAS, CTR, budjetti</small></div>
+                    <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                </div>
+                <div class="alert-setting-row">
+                    <div class="alert-setting-label">SEM<small>CPA, konversiot, budjetti</small></div>
+                    <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                </div>
+                <div class="alert-setting-row">
+                    <div class="alert-setting-label">Sisaltoagentti<small>Julkaisut, hyvaksynnat</small></div>
+                    <div class="toggle-switch" onclick="this.classList.toggle('active')"></div>
+                </div>
+                <div class="alert-setting-row">
+                    <div class="alert-setting-label">Analytiikka<small>Raportit, insightit</small></div>
+                    <div class="toggle-switch active" onclick="this.classList.toggle('active')"></div>
+                </div>
+            </div>
+            <button class="btn btn-primary btn-lg" style="width:100%;" onclick="saveAlertSettings()">Tallenna asetukset</button>
+        </div>
+    </div>
+</div>
+
+<!-- SCHEDULE REPORT MODAL -->
+<div class="modal-overlay" id="scheduleReportModal" onclick="closeScheduleReportModal(event)">
+    <div class="modal" onclick="event.stopPropagation()" style="max-width:480px;">
+        <div class="modal-header">
+            <h2>Ajasta raportti</h2>
+            <button class="modal-close" onclick="closeScheduleReportModalForce()">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Raporttityyppi</label>
+                <select class="form-input" id="schedReportType">
+                    <option value="weekly">Viikkoraportti</option>
+                    <option value="monthly">Kuukausiraportti</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Lahetyspaiva</label>
+                <select class="form-input" id="schedReportDay">
+                    <option value="ma">Maanantai</option>
+                    <option value="ti">Tiistai</option>
+                    <option value="ke">Keskiviikko</option>
+                    <option value="to">Torstai</option>
+                    <option value="pe">Perjantai</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Kellonaika</label>
+                <select class="form-input" id="schedReportTime">
+                    <option value="08:00">08:00</option>
+                    <option value="09:00" selected>09:00</option>
+                    <option value="10:00">10:00</option>
+                    <option value="12:00">12:00</option>
+                    <option value="14:00">14:00</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Vastaanottajan sahkoposti</label>
+                <input class="form-input" id="schedReportEmail" value="mikko@techflow.fi">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Muoto</label>
+                <select class="form-input" id="schedReportFormat">
+                    <option value="email">Sahkoposti</option>
+                    <option value="pdf">PDF-liite</option>
+                </select>
+            </div>
+            <button class="btn btn-primary btn-lg" style="width:100%;" onclick="saveScheduleReport()">Tallenna ajastus</button>
+        </div>
     </div>
 </div>
 
@@ -3737,9 +4359,11 @@ function filterFeed(btn, type) {
 var liveActivities = [
     { time: '', icon: '<i data-lucide="search" style="width:14px;height:14px;"></i>', text: '<strong>SEO-agentti</strong> paivitti 3 meta-kuvausta paremmilla avainsanoilla', type: 'seo' },
     { time: '', icon: '<i data-lucide="file-text" style="width:14px;height:14px;"></i>', text: '<strong>Sisaltoagentti</strong> aloitti artikkelin kirjoittamisen: "Cloud migration guide"', type: 'content' },
+    { time: '', type: 'collab', isCollab: true, collabIcons: ['search', 'coins'], collabText: '<strong>SEO \u2192 SEM</strong> jakoi avainsanadatan: 5 uutta mahdollisuutta Google Ads -kampanjaan' },
     { time: '', icon: '<i data-lucide="zap" style="width:14px;height:14px;"></i>', text: '<strong>Meta Ads</strong> pysaytti heikosti toimivan mainosjoukon — saasto 45 \u20AC/pv', type: 'ads' },
     { time: '', icon: '<i data-lucide="bar-chart-3" style="width:14px;height:14px;"></i>', text: '<strong>Analytiikka-agentti</strong> havaitsi konversiopiikin landing pagella /demo', type: 'analytics' },
     { time: '', icon: '<i data-lucide="wrench" style="width:14px;height:14px;"></i>', text: '<strong>Tekninen SEO</strong> optimoi 4 kuvan alt-tekstit hakukoneystavallisiksi', type: 'tech' },
+    { time: '', type: 'collab', isCollab: true, collabIcons: ['bar-chart-3', 'search'], collabText: '<strong>Analytiikka \u2192 SEO</strong> raportoi: "pilvipalvelut"-positiot nousseet 3 paikkaa keskimaarin' },
     { time: '', icon: '<i data-lucide="coins" style="width:14px;height:14px;"></i>', text: '<strong>SEM-agentti</strong> loysi 3 uutta konvertoivaa hakutermia', type: 'ads' },
 ];
 var liveIndex = 0;
@@ -3754,7 +4378,15 @@ setInterval(function() {
     item.className = 'feed-item';
     item.dataset.type = activity.type;
     item.setAttribute('data-searchable', '');
-    item.innerHTML = '<span class="feed-time">' + timeStr + '</span><span class="feed-icon">' + activity.icon + '</span><span class="feed-text">' + activity.text + '</span>';
+    if (activity.isCollab) {
+        item.innerHTML = '<span class="feed-time">' + timeStr + '</span>' +
+            '<span class="feed-collab"><i data-lucide="' + activity.collabIcons[0] + '" style="width:14px;height:14px;"></i>' +
+            '<span class="feed-collab-arrow">\u2192</span>' +
+            '<i data-lucide="' + activity.collabIcons[1] + '" style="width:14px;height:14px;"></i></span>' +
+            '<span class="feed-text">' + activity.collabText + '</span>';
+    } else {
+        item.innerHTML = '<span class="feed-time">' + timeStr + '</span><span class="feed-icon">' + activity.icon + '</span><span class="feed-text">' + activity.text + '</span>';
+    }
     feed.insertBefore(item, feed.firstChild);
     if (typeof lucide !== 'undefined') lucide.createIcons();
     while (feed.children.length > 15) {
@@ -4243,6 +4875,8 @@ function switchReportTab(btn, tab) {
     document.getElementById('reportTabWeekly').style.display = tab === 'weekly' ? '' : 'none';
     document.getElementById('reportTabMonthly').style.display = tab === 'monthly' ? '' : 'none';
     document.getElementById('reportTabSuggestions').style.display = tab === 'suggestions' ? '' : 'none';
+    document.getElementById('reportTabAudit').style.display = tab === 'audit' ? '' : 'none';
+    if (tab === 'audit' && typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function approveActionSuggestion(idx, isReport) {
@@ -4266,6 +4900,7 @@ function navigateToSuggestions() {
         document.getElementById('reportTabWeekly').style.display = 'none';
         document.getElementById('reportTabMonthly').style.display = 'none';
         document.getElementById('reportTabSuggestions').style.display = '';
+        document.getElementById('reportTabAudit').style.display = 'none';
         lucide.createIcons();
     }, 100);
 }
@@ -4437,7 +5072,11 @@ function toggleReasoning(el) {
         chevron.setAttribute('data-lucide', isExpanded ? 'chevron-down' : 'chevron-right');
         if (typeof lucide !== 'undefined') lucide.createIcons();
     }
-    el.childNodes[el.childNodes.length - 1].textContent = isExpanded ? ' Piilota paattely' : ' Nayta paattely';
+    var textNode = el.childNodes[el.childNodes.length - 1];
+    if (!el.dataset.openLabel) {
+        el.dataset.openLabel = textNode.textContent.trim();
+    }
+    textNode.textContent = isExpanded ? ' Piilota' : ' ' + el.dataset.openLabel;
 }
 
 // =============================================
@@ -4470,6 +5109,11 @@ var chatResponses = {
     'strategia': 'Suosittelen keskittymistä pitkän hännän avainsanoihin "pilvipalvelut"-klusterissa. Data osoittaa, että kilpailu on matalampaa ja konversioaste korkeampi näissä hauissa.',
     'raportti': 'Viimeisin viikkoraportti osoittaa positiivista trendiä: orgaaninen liikenne +12%, liidit +8 kpl, ja ROAS on noussut 4.2x tasolle. Suurimmat kasvuajurit ovat olleet uudet blogiartikkelit.',
     'budjetti': 'Nykyinen budjettijakauma on linjassa tavoitteiden kanssa. Google Ads tuottaa parasta ROAS:ia (4.8x), joten suosittelen lisäpanostusta sinne. Meta Ads -kampanjoissa on potentiaalia retargeting-segmentissä.',
+    'miksi laski': 'Orgaaninen liikenne laski viime viikolla 3% johtuen kausivaihtelusta. Historiadatan perusteella tama on normaalia. Ennuste: liikenne palautuu normaalitasolle 5-7 paivassa. Suositus: ei tarvetta toimenpiteille.',
+    'vertaa': 'Vertailu edelliseen kuukauteen: Liikenne +18% (21 450 vs. 18 200), Liidit +15% (39 vs. 34), ROAS +18% (3.8x vs. 3.2x), SEO Health +6% (84 vs. 79). Suurimmat kasvuajurit: uudet blogiartikkelit (+45% org. liikenne) ja Meta Ads -optimointi (+32% konversiot).',
+    'ennuste': 'Ennuste seuraavalle 30 paivalle: Liikenne 27 000-29 000 (+12%/kk). Liidit 52-58. ROAS 4.4-4.8x. Suurin riski: CloudTech Finlandin kilpaileva sisalto. Suositus: priorisoi pilvipalvelut-klusterin julkaisu.',
+    'kilpailija': 'Kilpailija-analyysi: CloudTech Finland on aktiivisin — 3 artikkelia ja 1 Google Ads -kampanja viim. 48h. Uhkataso: korkea. Heidan orgaaninen liikenne kasvoi +15%. Suositus: julkaise 3 pilvipalvelut-artikkelia ja nosta Google Ads -budjettia.',
+    'kustannus': 'Kustannusanalyysi: AI-tiimi 599 €/kk + mainoskulut 3 600 € = yhteensa 4 199 €/kk. Perinteinen toimisto: ~12 000 €/kk. Saasto: 65% (-7 801 €/kk). ROI: tuotto 18 700 € / kustannus 4 199 € = 4.5x.',
 };
 
 function sendChatMessage() {
@@ -4510,11 +5154,270 @@ function sendChatMessage() {
     }, delay);
 }
 
+// =============================================
+// NEW TASK MODAL
+// =============================================
+function openNewTaskModal() {
+    document.getElementById('newTaskModal').classList.add('open');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function closeNewTaskModal(e) {
+    if (e.target.classList.contains('modal-overlay')) {
+        closeNewTaskModalForce();
+    }
+}
+
+function closeNewTaskModalForce() {
+    document.getElementById('newTaskModal').classList.remove('open');
+}
+
+function submitNewTask() {
+    var agent = document.getElementById('newTaskAgent').value;
+    var description = document.getElementById('newTaskDescription').value.trim();
+    var priority = document.getElementById('newTaskPriority').value;
+
+    if (!agent) {
+        showToast('Valitse agentti ensin', 'error');
+        return;
+    }
+    if (!description) {
+        showToast('Kirjoita tehtavan kuvaus', 'error');
+        return;
+    }
+
+    var agentIcons = {
+        'Orgaaninen SEO': 'search',
+        'Tekninen SEO': 'wrench',
+        'Maksettu some': 'zap',
+        'SEM (Google Ads)': 'coins',
+        'Sisaltoagentti': 'file-text',
+        'Analytiikka': 'bar-chart-3'
+    };
+    var agentTypes = {
+        'Orgaaninen SEO': 'seo',
+        'Tekninen SEO': 'tech',
+        'Maksettu some': 'ads',
+        'SEM (Google Ads)': 'ads',
+        'Sisaltoagentti': 'content',
+        'Analytiikka': 'analytics'
+    };
+
+    // Build feed item with safe DOM methods
+    var feed = document.getElementById('activityFeed');
+    if (feed) {
+        var now = new Date();
+        var timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        var item = document.createElement('div');
+        item.className = 'feed-item';
+        item.dataset.type = agentTypes[agent] || 'seo';
+        item.setAttribute('data-searchable', '');
+
+        var timeSpan = document.createElement('span');
+        timeSpan.className = 'feed-time';
+        timeSpan.textContent = timeStr;
+
+        var iconSpan = document.createElement('span');
+        iconSpan.className = 'feed-icon';
+        var iconEl = document.createElement('i');
+        iconEl.setAttribute('data-lucide', agentIcons[agent] || 'circle');
+        iconEl.style.cssText = 'width:14px;height:14px;';
+        iconSpan.appendChild(iconEl);
+
+        var textSpan = document.createElement('span');
+        textSpan.className = 'feed-text';
+        var strong = document.createElement('strong');
+        strong.textContent = agent;
+        var truncated = description.length > 80 ? description.substring(0, 80) + '...' : description;
+        var priorityTag = document.createElement('span');
+        priorityTag.style.cssText = 'color:var(--accent);font-size:11px;';
+        priorityTag.textContent = ' [' + priority + ']';
+        textSpan.appendChild(strong);
+        textSpan.appendChild(document.createTextNode(' sai uuden tehtavan: \u201C' + truncated + '\u201D '));
+        textSpan.appendChild(priorityTag);
+
+        item.appendChild(timeSpan);
+        item.appendChild(iconSpan);
+        item.appendChild(textSpan);
+        feed.insertBefore(item, feed.firstChild);
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    // Add to task tracker
+    var taskList = document.getElementById('taskTrackList');
+    if (taskList) {
+        var taskItem = document.createElement('div');
+        taskItem.className = 'task-track-item';
+        var agentSpan = document.createElement('span');
+        agentSpan.className = 'task-track-agent';
+        agentSpan.textContent = agent;
+        var descSpan = document.createElement('span');
+        descSpan.className = 'task-track-desc';
+        descSpan.textContent = description.length > 60 ? description.substring(0, 60) + '...' : description;
+        var statusSpan = document.createElement('span');
+        statusSpan.className = 'task-track-status received';
+        statusSpan.textContent = 'Vastaanotettu';
+        var timeSpan2 = document.createElement('span');
+        timeSpan2.className = 'task-track-time';
+        timeSpan2.textContent = 'juuri nyt';
+        taskItem.appendChild(agentSpan);
+        taskItem.appendChild(descSpan);
+        taskItem.appendChild(statusSpan);
+        taskItem.appendChild(timeSpan2);
+        taskList.insertBefore(taskItem, taskList.firstChild);
+        var count = taskList.querySelectorAll('.task-track-item').length;
+        var countEl = document.getElementById('taskTrackCount');
+        if (countEl) countEl.textContent = count + ' tehtavaa';
+        // Simulate status progression
+        setTimeout(function() {
+            statusSpan.className = 'task-track-status processing';
+            statusSpan.textContent = 'Kasittelyssa';
+        }, 5000);
+        setTimeout(function() {
+            statusSpan.className = 'task-track-status done';
+            statusSpan.textContent = 'Valmis';
+            showToast(agent + ' suoritti tehtavan', 'success');
+        }, 20000);
+    }
+
+    showToast('Tehtava annettu: ' + agent, 'success');
+    closeNewTaskModalForce();
+    document.getElementById('newTaskAgent').value = '';
+    document.getElementById('newTaskDescription').value = '';
+    document.getElementById('newTaskPriority').value = 'Normaali';
+}
+
+// =============================================
+// DASHBOARD AUTONOMY CYCLING
+// =============================================
+var agentAutonomyLevels = [1, 2, 0, 1, 0, 2]; // 0=Valvottu, 1=Puoliautonomi, 2=Autonomi
+var autonomyLabels = ['Valvottu', 'Puoliautonomi', 'Autonomi'];
+var autonomyColors = ['lvl-supervised', 'lvl-semi', 'lvl-full'];
+
+function cycleAutonomy(idx) {
+    agentAutonomyLevels[idx] = (agentAutonomyLevels[idx] + 1) % 3;
+    var level = agentAutonomyLevels[idx];
+    var label = document.getElementById('autonomyLabel' + idx);
+    if (!label) return;
+    label.textContent = autonomyLabels[level];
+    var tile = label.closest('.agent-tile');
+    var segments = tile.querySelectorAll('.agent-tile-autonomy-segment');
+    segments.forEach(function(seg, i) {
+        seg.className = 'agent-tile-autonomy-segment';
+        if (i <= level) seg.classList.add(autonomyColors[level]);
+    });
+    var agentName = tile.querySelector('.agent-tile-name').textContent;
+    showToast(agentName + ': ' + autonomyLabels[level], 'info');
+}
+
+// =============================================
+// COMPETITOR REACTIONS
+// =============================================
+function reactToCompetitor(idx) {
+    var reactions = [
+        { agent: 'Orgaaninen SEO', msg: 'SEO-agentti luo vastasisaltoa pilvipalvelut-aiheesta' },
+        { agent: 'Maksettu some', msg: 'Some-agentti analysoi kilpailijan LinkedIn-kampanjaa' },
+    ];
+    var reaction = reactions[idx];
+    if (!reaction) return;
+    showToast(reaction.msg, 'info');
+    var btns = document.querySelectorAll('.competitor-dash-react-btn');
+    if (btns[idx]) {
+        btns[idx].textContent = 'Reagoitu';
+        btns[idx].disabled = true;
+        btns[idx].style.opacity = '0.5';
+    }
+}
+
+// =============================================
+// ANALYTICS CHAT SHORTCUT
+// =============================================
+function openAnalyticsChat() {
+    navigateTo('agents');
+    setTimeout(function() {
+        showAgentDetail(5);
+        setTimeout(function() {
+            var chatInput = document.getElementById('chatInput');
+            if (chatInput) chatInput.focus();
+        }, 300);
+    }, 100);
+}
+
+// =============================================
+// ALERT SETTINGS MODAL
+// =============================================
+function openAlertSettingsModal() {
+    document.getElementById('alertSettingsModal').classList.add('open');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+function closeAlertSettingsModal(e) {
+    if (e.target.classList.contains('modal-overlay')) closeAlertSettingsModalForce();
+}
+function closeAlertSettingsModalForce() {
+    document.getElementById('alertSettingsModal').classList.remove('open');
+}
+function saveAlertSettings() {
+    showToast('Halytysasetukset tallennettu', 'success');
+    closeAlertSettingsModalForce();
+}
+
+// =============================================
+// SCHEDULE REPORT MODAL
+// =============================================
+function openScheduleReportModal() {
+    document.getElementById('scheduleReportModal').classList.add('open');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+function closeScheduleReportModal(e) {
+    if (e.target.classList.contains('modal-overlay')) closeScheduleReportModalForce();
+}
+function closeScheduleReportModalForce() {
+    document.getElementById('scheduleReportModal').classList.remove('open');
+}
+function saveScheduleReport() {
+    var type = document.getElementById('schedReportType').value;
+    var dayEl = document.getElementById('schedReportDay');
+    var dayText = dayEl.options[dayEl.selectedIndex].text;
+    var time = document.getElementById('schedReportTime').value;
+    var typeName = type === 'weekly' ? 'Viikkoraportti' : 'Kuukausiraportti';
+    showToast(typeName + ' ajastettu: ' + dayText + ' klo ' + time, 'success');
+    closeScheduleReportModalForce();
+    var badge = document.getElementById('scheduledBadge');
+    var badgeText = document.getElementById('scheduledBadgeText');
+    if (badge && badgeText) {
+        badge.style.display = 'inline-flex';
+        badgeText.textContent = 'Seuraava: Ma 10.3. klo ' + time;
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+}
+
+// =============================================
+// AUDIT LOG FILTERS
+// =============================================
+function filterAuditLog() {
+    var agent = document.getElementById('auditAgentFilter').value;
+    var action = document.getElementById('auditActionFilter').value;
+    document.querySelectorAll('.audit-log-entry').forEach(function(entry) {
+        var matchAgent = (agent === 'all' || entry.dataset.agent === agent);
+        var matchAction = (action === 'all' || entry.dataset.action === action);
+        entry.style.display = (matchAgent && matchAction) ? 'flex' : 'none';
+    });
+}
+function exportAuditLog() {
+    showToast('Ladataan CSV...', 'info');
+    setTimeout(function() {
+        showToast('Auditointiloki viety onnistuneesti (audit_log_2026-03.csv)', 'success');
+    }, 1500);
+}
+
 // Keyboard nav: Escape closes modals/notifications/confirm
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
         document.getElementById('contentModal').classList.remove('open');
         document.getElementById('reportModal').classList.remove('open');
+        document.getElementById('newTaskModal').classList.remove('open');
+        document.getElementById('alertSettingsModal').classList.remove('open');
+        document.getElementById('scheduleReportModal').classList.remove('open');
         document.getElementById('notifDropdown').classList.remove('open');
         closeConfirmDialog();
     }
