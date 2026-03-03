@@ -1,0 +1,3269 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Markkinointitiimi — Demo</title>
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=gambetta@400,500,600,700&f[]=switzer@300,400,500,600,700&display=swap">
+    <style>
+/* =============================================
+   CSS CUSTOM PROPERTIES — Nordic Control Room
+   ============================================= */
+:root {
+    --bg-primary: #111110;
+    --bg-secondary: #1a1a18;
+    --bg-tertiary: #222220;
+    --bg-card: rgba(212, 136, 43, 0.06);
+    --bg-card-hover: rgba(212, 136, 43, 0.12);
+    --text-primary: #ece8e1;
+    --text-secondary: #a09a90;
+    --text-muted: #6b665c;
+    --accent: #d4882b;
+    --accent-light: #e8a84c;
+    --accent-glow: rgba(212, 136, 43, 0.4);
+    --accent-secondary: #c27a24;
+    --green: #5cb85c;
+    --green-bg: rgba(92, 184, 92, 0.1);
+    --orange: #e8a84c;
+    --orange-bg: rgba(232, 168, 76, 0.1);
+    --red: #c9544d;
+    --red-bg: rgba(201, 84, 77, 0.1);
+    --cyan: #5ba4b5;
+    --cyan-bg: rgba(91, 164, 181, 0.1);
+    --blue: #5b8fb9;
+    --blue-bg: rgba(91, 143, 185, 0.1);
+    --border: rgba(255, 255, 255, 0.1);
+    --border-subtle: rgba(255, 255, 255, 0.06);
+    --sidebar-width: 260px;
+    --header-height: 60px;
+    --font-display: 'Gambetta', serif;
+    --font-body: 'Switzer', sans-serif;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-xs: 6px;
+    --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    --transition: 0.2s ease;
+}
+
+/* =============================================
+   RESET
+   ============================================= */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; }
+body {
+    font-family: var(--font-body);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    display: flex;
+    position: relative;
+}
+/* Noise overlay */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+}
+a { color: var(--accent-light); text-decoration: none; }
+button { cursor: pointer; font-family: var(--font-body); border: none; background: none; color: var(--text-primary); }
+input, select, textarea { font-family: var(--font-body); }
+
+/* =============================================
+   SIDEBAR
+   ============================================= */
+.sidebar {
+    width: var(--sidebar-width);
+    min-width: var(--sidebar-width);
+    height: 100vh;
+    background: linear-gradient(180deg, #1a1a18 0%, #151514 100%);
+    border-right: 1px solid var(--border-subtle);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    position: relative;
+}
+.sidebar-logo {
+    padding: 20px 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.sidebar-logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 700; color: #111110;
+    font-family: var(--font-display);
+}
+.sidebar-logo span {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-primary);
+}
+.sidebar-nav {
+    flex: 1;
+    padding: 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: all var(--transition);
+    cursor: pointer;
+    position: relative;
+    border-left: 3px solid transparent;
+}
+.nav-item:hover {
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+.nav-item.active {
+    background: rgba(212, 136, 43, 0.1);
+    color: var(--accent-light);
+    border-left-color: var(--accent);
+}
+.nav-item .nav-icon {
+    width: 20px;
+    text-align: center;
+    font-size: 16px;
+}
+.nav-badge {
+    margin-left: auto;
+    background: var(--accent);
+    color: #111110;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 10px;
+    min-width: 20px;
+    text-align: center;
+}
+.sidebar-user {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.sidebar-user-avatar {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 600; color: #111110;
+}
+.sidebar-user-info { flex: 1; }
+.sidebar-user-name { font-size: 13px; font-weight: 600; }
+.sidebar-user-company { font-size: 11px; color: var(--text-muted); }
+.sidebar-user-plan {
+    font-size: 10px;
+    color: var(--accent-light);
+    background: rgba(212, 136, 43, 0.15);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+/* =============================================
+   MAIN CONTENT
+   ============================================= */
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* HEADER */
+.header {
+    height: var(--header-height);
+    min-height: var(--header-height);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 16px;
+    background: var(--bg-primary);
+    z-index: 50;
+}
+.header-search {
+    flex: 1;
+    max-width: 400px;
+    position: relative;
+}
+.header-search input {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px 8px 36px;
+    color: var(--text-primary);
+    font-size: 13px;
+    outline: none;
+    transition: border-color var(--transition);
+}
+.header-search input::placeholder { color: var(--text-muted); }
+.header-search input:focus { border-color: var(--accent); }
+.header-search::before {
+    content: '\1F50D';
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 13px;
+}
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+.header-btn {
+    width: 38px; height: 38px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    position: relative;
+    transition: background var(--transition);
+}
+.header-btn:hover { background: var(--bg-card); }
+.header-btn .badge {
+    position: absolute;
+    top: 4px; right: 4px;
+    width: 16px; height: 16px;
+    background: var(--red);
+    border-radius: 50%;
+    font-size: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+}
+.header-avatar {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #111110;
+    cursor: pointer;
+}
+
+/* CONTENT */
+.content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+}
+.content::-webkit-scrollbar { width: 6px; }
+.content::-webkit-scrollbar-track { background: transparent; }
+.content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Page title */
+.page-title {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 24px;
+    letter-spacing: -0.02em;
+}
+.page-subtitle {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: -16px;
+    margin-bottom: 24px;
+}
+
+/* =============================================
+   STAGGERED REVEAL ANIMATION
+   ============================================= */
+@keyframes revealUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.reveal {
+    opacity: 0;
+    animation: revealUp 0.5s ease forwards;
+}
+.reveal-1 { animation-delay: 0.05s; }
+.reveal-2 { animation-delay: 0.1s; }
+.reveal-3 { animation-delay: 0.15s; }
+.reveal-4 { animation-delay: 0.2s; }
+.reveal-5 { animation-delay: 0.25s; }
+.reveal-6 { animation-delay: 0.3s; }
+.reveal-7 { animation-delay: 0.35s; }
+.reveal-8 { animation-delay: 0.4s; }
+
+/* =============================================
+   VIEW TRANSITIONS
+   ============================================= */
+@keyframes viewFadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.view-entering {
+    animation: viewFadeIn 0.35s ease forwards;
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+.skeleton {
+    background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease infinite;
+    border-radius: var(--radius-sm);
+}
+.skeleton-text { height: 14px; margin-bottom: 8px; width: 80%; }
+.skeleton-title { height: 24px; margin-bottom: 16px; width: 50%; }
+.skeleton-card { height: 120px; margin-bottom: 16px; }
+
+/* =============================================
+   DASHBOARD — Asymmetric KPI Hero
+   ============================================= */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: all var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+.stat-card:hover::before { opacity: 1; }
+.stat-card:hover { border-color: var(--border); background: var(--bg-card-hover); }
+.stat-card.hero {
+    grid-row: span 1;
+}
+.stat-card.hero .stat-value {
+    font-size: 42px;
+}
+.stat-card.hero .stat-sparkline canvas {
+    height: 80px;
+}
+.stat-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+.stat-value {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+.stat-change {
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+.stat-change.positive { color: var(--green); background: var(--green-bg); }
+.stat-change.neutral { color: var(--orange); background: var(--orange-bg); }
+.stat-sparkline { margin-top: 12px; }
+.stat-sparkline canvas { width: 100%; height: 60px; }
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+/* Panel */
+.panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+.panel-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.panel-title {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+}
+.panel-body { padding: 16px 20px; }
+.panel-link {
+    font-size: 12px;
+    color: var(--accent-light);
+    cursor: pointer;
+}
+.panel-link:hover { text-decoration: underline; }
+
+/* Agent status tiles — 2x3 grid for dashboard */
+.agent-tiles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.agent-tile {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all var(--transition);
+    cursor: pointer;
+}
+.agent-tile:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: var(--border);
+}
+.agent-tile-pulse {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    position: relative;
+    flex-shrink: 0;
+}
+.agent-tile-pulse::before,
+.agent-tile-pulse::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    opacity: 0;
+}
+.agent-tile-pulse.pulse-active::before {
+    animation: pulseRing 2s ease-out infinite;
+}
+.agent-tile-pulse.pulse-active::after {
+    animation: pulseRing 2s ease-out infinite 1s;
+}
+.agent-tile-pulse.pulse-fast::before {
+    animation: pulseRing 1.2s ease-out infinite;
+}
+.agent-tile-pulse.pulse-fast::after {
+    animation: pulseRing 1.2s ease-out infinite 0.6s;
+}
+.agent-tile-pulse.pulse-slow::before {
+    animation: pulseRing 3s ease-out infinite;
+}
+.agent-tile-pulse.pulse-slow::after {
+    animation: pulseRing 3s ease-out infinite 1.5s;
+}
+@keyframes pulseRing {
+    0% { transform: scale(1); opacity: 0.4; }
+    100% { transform: scale(1.8); opacity: 0; }
+}
+.agent-tile-name { font-size: 12px; font-weight: 500; }
+.agent-tile-status { font-size: 10px; margin-top: 2px; }
+
+/* Approval queue items */
+.approval-mini-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.approval-mini-item:last-child { border-bottom: none; }
+.approval-mini-icon { font-size: 18px; flex-shrink: 0; }
+.approval-mini-text { flex: 1; }
+.approval-mini-title { font-size: 13px; font-weight: 500; }
+.approval-mini-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.approval-mini-actions { display: flex; gap: 6px; }
+
+/* Small buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius-xs);
+    font-size: 12px;
+    font-weight: 600;
+    transition: all var(--transition);
+}
+.btn-primary {
+    background: var(--accent);
+    color: #111110;
+}
+.btn-primary:hover { background: var(--accent-light); }
+.btn-success {
+    background: var(--green-bg);
+    color: var(--green);
+    border: 1px solid rgba(92, 184, 92, 0.2);
+}
+.btn-success:hover { background: rgba(92, 184, 92, 0.2); }
+.btn-danger {
+    background: var(--red-bg);
+    color: var(--red);
+    border: 1px solid rgba(201, 84, 77, 0.2);
+}
+.btn-danger:hover { background: rgba(201, 84, 77, 0.2); }
+.btn-outline {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+}
+.btn-outline:hover { background: var(--bg-card); color: var(--text-primary); border-color: rgba(255,255,255,0.2); }
+.btn-sm { padding: 4px 10px; font-size: 11px; }
+.btn-lg { padding: 10px 20px; font-size: 14px; }
+
+/* Activity feed */
+.feed-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    animation: feedIn 0.4s ease;
+}
+.feed-item:last-child { border-bottom: none; }
+@keyframes feedIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.feed-time {
+    font-size: 11px;
+    color: var(--text-muted);
+    min-width: 40px;
+    padding-top: 2px;
+    font-variant-numeric: tabular-nums;
+}
+.feed-icon { font-size: 16px; flex-shrink: 0; padding-top: 1px; }
+.feed-text { font-size: 13px; color: var(--text-secondary); flex: 1; line-height: 1.5; }
+.feed-text strong { color: var(--text-primary); font-weight: 500; }
+
+.feed-filters {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+.feed-filter {
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 10px;
+    background: var(--bg-card);
+    color: var(--text-muted);
+    border: 1px solid var(--border-subtle);
+    cursor: pointer;
+    transition: all var(--transition);
+}
+.feed-filter.active, .feed-filter:hover {
+    background: rgba(212, 136, 43, 0.15);
+    color: var(--accent-light);
+    border-color: var(--accent);
+}
+
+/* =============================================
+   AGENTS VIEW
+   ============================================= */
+.agents-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.agent-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 24px;
+    cursor: pointer;
+    transition: all var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+/* Colored left border stripe */
+.agent-card::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--card-accent, var(--accent));
+}
+.agent-card:hover { border-color: var(--border); transform: translateY(-2px); box-shadow: var(--shadow); }
+.agent-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.agent-card-icon {
+    width: 44px; height: 44px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+}
+.agent-card-name {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+}
+.agent-card-status {
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+}
+.agent-card-kpis {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.agent-card-kpi {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+}
+.agent-card-kpi-label { color: var(--text-secondary); }
+.agent-card-kpi-value { font-weight: 600; }
+.agent-card-footer {
+    border-top: 1px solid var(--border-subtle);
+    padding-top: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Agent detail */
+.agent-detail { display: none; }
+.agent-detail.active { display: block; }
+.agent-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.agent-detail-back {
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: var(--radius-sm);
+    transition: background var(--transition);
+}
+.agent-detail-back:hover { background: var(--bg-card); }
+.agent-detail-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+.agent-detail-kpis {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+.agent-kpi-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    text-align: center;
+}
+.agent-kpi-card .kpi-value {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 600;
+}
+.agent-kpi-card .kpi-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+/* Chart container */
+.chart-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    position: relative;
+}
+/* Grid pattern background for charts */
+.chart-container::before {
+    content: '';
+    position: absolute;
+    inset: 20px;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    border-radius: var(--radius-sm);
+}
+.chart-container canvas { width: 100%; height: 300px; position: relative; z-index: 1; }
+
+/* Log items */
+.log-item {
+    display: flex;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 13px;
+}
+.log-item:last-child { border-bottom: none; }
+.log-time { color: var(--text-muted); min-width: 120px; font-size: 11px; font-variant-numeric: tabular-nums; }
+.log-text { color: var(--text-secondary); }
+
+/* Autonomy slider */
+.autonomy-control {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.autonomy-control:last-child { border-bottom: none; }
+.autonomy-label { flex: 1; font-size: 13px; }
+.autonomy-select {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    padding: 6px 10px;
+    color: var(--text-primary);
+    font-size: 12px;
+    outline: none;
+}
+
+/* =============================================
+   CONTENT VIEW
+   ============================================= */
+.tabs {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.tab {
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all var(--transition);
+    margin-bottom: -1px;
+}
+.tab:hover { color: var(--text-secondary); }
+.tab.active {
+    color: var(--accent-light);
+    border-bottom-color: var(--accent);
+}
+
+.content-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.content-table th {
+    text-align: left;
+    padding: 10px 16px;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.content-table td {
+    padding: 14px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.content-table tr { transition: background var(--transition); cursor: pointer; }
+.content-table tbody tr:hover { background: var(--bg-card); }
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.status-badge.published { background: var(--green-bg); color: var(--green); }
+.status-badge.draft { background: var(--orange-bg); color: var(--orange); }
+.status-badge.review { background: var(--blue-bg); color: var(--blue); }
+.status-badge.scheduled { background: rgba(212, 136, 43, 0.1); color: var(--accent); }
+
+.keyword-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    margin: 1px 2px;
+}
+
+/* =============================================
+   APPROVALS VIEW
+   ============================================= */
+.filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.filter-btn {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 10px;
+    background: var(--bg-card);
+    color: var(--text-muted);
+    border: 1px solid var(--border-subtle);
+    cursor: pointer;
+    transition: all var(--transition);
+}
+.filter-btn.active, .filter-btn:hover {
+    background: rgba(212, 136, 43, 0.15);
+    color: var(--accent-light);
+    border-color: var(--accent);
+}
+.filter-spacer { flex: 1; }
+
+.approval-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 12px;
+    transition: all 0.4s ease;
+}
+.approval-card.removing {
+    opacity: 0;
+    transform: translateX(100px);
+    max-height: 0;
+    padding: 0 20px;
+    margin-bottom: 0;
+    overflow: hidden;
+}
+.approval-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.approval-card-icon { font-size: 24px; flex-shrink: 0; }
+.approval-card-content { flex: 1; }
+.approval-card-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.approval-card-meta { font-size: 12px; color: var(--text-muted); display: flex; gap: 16px; flex-wrap: wrap; }
+.approval-card-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6; }
+.approval-card-priority {
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.approval-card-priority.high { background: var(--red-bg); color: var(--red); }
+.approval-card-priority.normal { background: var(--blue-bg); color: var(--blue); }
+.approval-card-priority.low { background: var(--green-bg); color: var(--green); }
+.approval-card-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+/* Countdown timer */
+.approval-countdown {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.approval-countdown .countdown-icon { font-size: 14px; }
+
+/* =============================================
+   REPORTS VIEW
+   ============================================= */
+.report-list { display: flex; flex-direction: column; gap: 12px; }
+.report-item {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+.report-item:hover { border-color: var(--border); background: var(--bg-card-hover); }
+.report-icon {
+    width: 44px; height: 44px;
+    background: rgba(212, 136, 43, 0.15);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+}
+.report-info { flex: 1; }
+.report-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.report-date { font-size: 12px; color: var(--text-muted); }
+.report-summary { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+/* =============================================
+   SETTINGS VIEW
+   ============================================= */
+.settings-form { max-width: 600px; }
+.form-group {
+    margin-bottom: 20px;
+}
+.form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+.form-input {
+    width: 100%;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xs);
+    padding: 10px 14px;
+    color: var(--text-primary);
+    font-size: 13px;
+    outline: none;
+    transition: border-color var(--transition);
+}
+.form-input:focus { border-color: var(--accent); }
+.form-input:disabled { opacity: 0.6; }
+
+.integration-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+.integration-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.integration-icon { font-size: 24px; }
+.integration-info { flex: 1; }
+.integration-name { font-size: 13px; font-weight: 600; }
+.integration-status { font-size: 11px; margin-top: 2px; }
+.integration-status.connected { color: var(--green); }
+.integration-status.disconnected { color: var(--text-muted); }
+
+/* =============================================
+   NOTIFICATIONS DROPDOWN
+   ============================================= */
+.notifications-dropdown {
+    position: absolute;
+    top: var(--header-height);
+    right: 60px;
+    width: 380px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    z-index: 200;
+    display: none;
+}
+.notifications-dropdown.open { display: block; }
+.notif-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.notif-header h3 { font-family: var(--font-display); font-size: 15px; font-weight: 600; }
+.notif-item {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    gap: 12px;
+    transition: background var(--transition);
+    cursor: pointer;
+}
+.notif-item:hover { background: var(--bg-card); }
+.notif-item:last-child { border-bottom: none; }
+.notif-item.unread { background: rgba(212, 136, 43, 0.05); }
+.notif-icon { font-size: 18px; flex-shrink: 0; padding-top: 2px; }
+.notif-content { flex: 1; }
+.notif-text { font-size: 13px; line-height: 1.4; }
+.notif-time { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+/* =============================================
+   MODAL
+   ============================================= */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 300;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+.modal-overlay.open { display: flex; }
+.modal {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    width: 90%;
+    max-width: 700px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow);
+}
+.modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.modal-header h2 { font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+.modal-close {
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: var(--radius-xs);
+    transition: background var(--transition);
+}
+.modal-close:hover { background: var(--bg-card); }
+.modal-body { padding: 24px; }
+.modal-body p { font-size: 14px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 12px; }
+.modal-body h3 { font-family: var(--font-display); font-size: 16px; margin-bottom: 8px; }
+
+/* =============================================
+   CONFIRMATION DIALOG
+   ============================================= */
+.confirm-dialog {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 400;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+.confirm-dialog.open { display: flex; }
+.confirm-box {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+.confirm-box h3 {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+.confirm-box p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+.confirm-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+/* =============================================
+   TOAST NOTIFICATIONS
+   ============================================= */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.toast {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    min-width: 300px;
+    max-width: 420px;
+    animation: toastIn 0.35s ease forwards;
+    font-size: 13px;
+}
+.toast.toast-out {
+    animation: toastOut 0.3s ease forwards;
+}
+.toast-icon { font-size: 18px; flex-shrink: 0; }
+.toast-text { flex: 1; line-height: 1.4; }
+.toast-close {
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    padding: 2px 4px;
+}
+.toast-close:hover { opacity: 1; }
+.toast.success { border-left: 3px solid var(--green); }
+.toast.error { border-left: 3px solid var(--red); }
+.toast.info { border-left: 3px solid var(--accent); }
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+@keyframes toastOut {
+    from { opacity: 1; transform: translateX(0); }
+    to { opacity: 0; transform: translateX(40px); }
+}
+
+/* =============================================
+   BACK TO PRESENTATION LINK
+   ============================================= */
+.back-to-presentation {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    z-index: 500;
+    background: var(--accent);
+    color: #111110;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all var(--transition);
+    box-shadow: var(--shadow);
+}
+.back-to-presentation:hover { background: var(--accent-light); transform: translateY(-2px); }
+
+/* =============================================
+   SEARCH HIGHLIGHTS
+   ============================================= */
+.search-highlight {
+    background: rgba(212, 136, 43, 0.3);
+    border-radius: 2px;
+    padding: 0 2px;
+}
+.search-hidden { display: none !important; }
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 1100px) {
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .stats-grid .stat-card.hero { grid-column: span 2; }
+    .agents-grid { grid-template-columns: repeat(2, 1fr); }
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .agent-detail-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 800px) {
+    .sidebar { width: 60px; min-width: 60px; }
+    .sidebar-logo span,
+    .sidebar-nav .nav-text,
+    .sidebar-nav .nav-badge,
+    .sidebar-user-info,
+    .sidebar-user-plan { display: none; }
+    .sidebar-logo { padding: 16px; justify-content: center; }
+    .nav-item { justify-content: center; padding: 12px; }
+    .nav-item .nav-icon { width: auto; }
+    .sidebar-user { justify-content: center; padding: 16px; }
+    .agents-grid { grid-template-columns: 1fr; }
+    .integration-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .stats-grid .stat-card.hero { grid-column: span 1; }
+}
+
+/* =============================================
+   VIEW VISIBILITY
+   ============================================= */
+.view { display: none; }
+.view.active { display: block; }
+    </style>
+</head>
+<body>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- CONFIRMATION DIALOG -->
+<div class="confirm-dialog" id="confirmDialog">
+    <div class="confirm-box">
+        <h3 id="confirmTitle">Vahvista toiminto</h3>
+        <p id="confirmText">Haluatko varmasti suorittaa taman toiminnon?</p>
+        <div class="confirm-actions">
+            <button class="btn btn-outline" onclick="closeConfirmDialog()">Peruuta</button>
+            <button class="btn btn-danger" id="confirmActionBtn" onclick="confirmAction()">Vahvista</button>
+        </div>
+    </div>
+</div>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">AI</div>
+        <span>AI-Markkinointitiimi</span>
+    </div>
+    <div class="sidebar-nav">
+        <div class="nav-item active" data-view="dashboard" onclick="navigateTo('dashboard')">
+            <span class="nav-icon">\u{1F4CA}</span>
+            <span class="nav-text">Dashboard</span>
+        </div>
+        <div class="nav-item" data-view="agents" onclick="navigateTo('agents')">
+            <span class="nav-icon">\u{1F916}</span>
+            <span class="nav-text">Agentit</span>
+        </div>
+        <div class="nav-item" data-view="content" onclick="navigateTo('content')">
+            <span class="nav-icon">\u{1F4DD}</span>
+            <span class="nav-text">Sisallot</span>
+        </div>
+        <div class="nav-item" data-view="approvals" onclick="navigateTo('approvals')">
+            <span class="nav-icon">\u2705</span>
+            <span class="nav-text">Hyvaksynnat</span>
+            <span class="nav-badge" id="approvalBadge">5</span>
+        </div>
+        <div class="nav-item" data-view="reports" onclick="navigateTo('reports')">
+            <span class="nav-icon">\u{1F4C8}</span>
+            <span class="nav-text">Raportit</span>
+        </div>
+        <div class="nav-item" data-view="settings" onclick="navigateTo('settings')">
+            <span class="nav-icon">\u2699\uFE0F</span>
+            <span class="nav-text">Asetukset</span>
+        </div>
+    </div>
+    <div class="sidebar-user">
+        <div class="sidebar-user-avatar">MK</div>
+        <div class="sidebar-user-info">
+            <div class="sidebar-user-name">Mikko Korhonen</div>
+            <div class="sidebar-user-company">TechFlow Solutions Oy</div>
+        </div>
+        <span class="sidebar-user-plan">PRO</span>
+    </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-search">
+            <input type="text" placeholder="Hae sisaltoja, agentteja, raportteja..." id="globalSearch" oninput="handleSearch(this.value)">
+        </div>
+        <div class="header-right">
+            <button class="header-btn" id="notifBtn" onclick="toggleNotifications()">
+                \u{1F514}
+                <span class="badge" id="notifBadgeCount">4</span>
+            </button>
+            <div class="header-avatar">MK</div>
+        </div>
+    </header>
+
+    <!-- NOTIFICATIONS DROPDOWN -->
+    <div class="notifications-dropdown" id="notifDropdown">
+        <div class="notif-header">
+            <h3>Ilmoitukset</h3>
+            <button class="btn btn-sm btn-outline" onclick="markAllRead()">Merkitse luetuksi</button>
+        </div>
+        <div id="notifList">
+            <div class="notif-item unread">
+                <span class="notif-icon">\u{1F4DD}</span>
+                <div class="notif-content">
+                    <div class="notif-text"><strong>Sisaltoagentti</strong> loi uuden blogiartikkelin: "B2B-markkinoinnin trendit 2026"</div>
+                    <div class="notif-time">5 min sitten</div>
+                </div>
+            </div>
+            <div class="notif-item unread">
+                <span class="notif-icon">\u26A1</span>
+                <div class="notif-content">
+                    <div class="notif-text"><strong>Meta Ads -agentti</strong> optimoi kampanjan "Kevat Lead Gen" — CTR nousi 2.1% \u2192 3.4%</div>
+                    <div class="notif-time">23 min sitten</div>
+                </div>
+            </div>
+            <div class="notif-item unread">
+                <span class="notif-icon">\u{1F50D}</span>
+                <div class="notif-content">
+                    <div class="notif-text"><strong>SEO-agentti</strong> loysi 12 uutta avainsanamahdollisuutta "pilvipalvelut"-klusterissa</div>
+                    <div class="notif-time">1 h sitten</div>
+                </div>
+            </div>
+            <div class="notif-item unread">
+                <span class="notif-icon">\u26A0\uFE0F</span>
+                <div class="notif-content">
+                    <div class="notif-text"><strong>Tekninen SEO</strong> havaitsi 3 rikkinaista linkkia sivustolla — automaattinen korjaus suoritettu</div>
+                    <div class="notif-time">2 h sitten</div>
+                </div>
+            </div>
+            <div class="notif-item">
+                <span class="notif-icon">\u{1F4CA}</span>
+                <div class="notif-content">
+                    <div class="notif-text"><strong>Analytiikka-agentti</strong> viikkoraportti valmis — orgaaninen liikenne +12%</div>
+                    <div class="notif-time">3 h sitten</div>
+                </div>
+            </div>
+            <div class="notif-item">
+                <span class="notif-icon">\u{1F4B0}</span>
+                <div class="notif-content">
+                    <div class="notif-text"><strong>SEM-agentti</strong> ehdottaa budjetin nostoa Google Ads -kampanjassa — ROAS 4.8x</div>
+                    <div class="notif-time">5 h sitten</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENT AREA -->
+    <div class="content">
+
+        <!-- ============================
+             VIEW: DASHBOARD
+             ============================ -->
+        <div class="view active" id="view-dashboard">
+            <h1 class="page-title reveal reveal-1">Dashboard</h1>
+
+            <!-- Asymmetric Stats Grid: Hero + 3 smaller -->
+            <div class="stats-grid">
+                <div class="stat-card hero reveal reveal-2">
+                    <div class="stat-label">Liikenne (30pv)</div>
+                    <div class="stat-value" data-countup="24521" data-suffix="">0</div>
+                    <span class="stat-change positive">\u25B2 12%</span>
+                    <div class="stat-sparkline"><canvas id="spark1"></canvas></div>
+                </div>
+                <div class="stat-card reveal reveal-3">
+                    <div class="stat-label">Liidit (30pv)</div>
+                    <div class="stat-value" data-countup="47" data-suffix="">0</div>
+                    <span class="stat-change positive">\u25B2 8 uutta</span>
+                    <div class="stat-sparkline"><canvas id="spark2"></canvas></div>
+                </div>
+                <div class="stat-card reveal reveal-4">
+                    <div class="stat-label">ROAS</div>
+                    <div class="stat-value" data-countup="4.2" data-suffix="x" data-decimals="1">0x</div>
+                    <span class="stat-change positive">\u25B2 0.6</span>
+                    <div class="stat-sparkline"><canvas id="spark3"></canvas></div>
+                </div>
+                <div class="stat-card reveal reveal-5">
+                    <div class="stat-label">SEO Health</div>
+                    <div class="stat-value"><span data-countup="87" data-suffix="">0</span><span style="font-size:16px; color: var(--text-muted);">/100</span></div>
+                    <span class="stat-change positive">\u25B2 3</span>
+                    <div class="stat-sparkline"><canvas id="spark4"></canvas></div>
+                </div>
+            </div>
+
+            <!-- Agent status tiles + Approval queue -->
+            <div class="dashboard-grid">
+                <div class="panel reveal reveal-6">
+                    <div class="panel-header">
+                        <span class="panel-title">Agenttien status</span>
+                        <span class="panel-link" onclick="navigateTo('agents')">Nayta kaikki \u2192</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="agent-tiles-grid">
+                            <div class="agent-tile" onclick="navigateTo('agents')">
+                                <div class="agent-tile-pulse pulse-active" style="color: var(--green);">\u{1F50D}</div>
+                                <div>
+                                    <div class="agent-tile-name">Orgaaninen SEO</div>
+                                    <div class="agent-tile-status" style="color: var(--green);">Aktiivinen</div>
+                                </div>
+                            </div>
+                            <div class="agent-tile" onclick="navigateTo('agents')">
+                                <div class="agent-tile-pulse pulse-active" style="color: var(--green);">\u{1F527}</div>
+                                <div>
+                                    <div class="agent-tile-name">Tekninen SEO</div>
+                                    <div class="agent-tile-status" style="color: var(--green);">Aktiivinen</div>
+                                </div>
+                            </div>
+                            <div class="agent-tile" onclick="navigateTo('agents')">
+                                <div class="agent-tile-pulse pulse-fast" style="color: var(--orange);">\u26A1</div>
+                                <div>
+                                    <div class="agent-tile-name">Maksettu some</div>
+                                    <div class="agent-tile-status" style="color: var(--orange);">Optimoi</div>
+                                </div>
+                            </div>
+                            <div class="agent-tile" onclick="navigateTo('agents')">
+                                <div class="agent-tile-pulse pulse-active" style="color: var(--green);">\u{1F4B0}</div>
+                                <div>
+                                    <div class="agent-tile-name">SEM (Google Ads)</div>
+                                    <div class="agent-tile-status" style="color: var(--green);">Aktiivinen</div>
+                                </div>
+                            </div>
+                            <div class="agent-tile" onclick="navigateTo('agents')">
+                                <div class="agent-tile-pulse pulse-slow" style="color: #b8a060;">\u{1F4DD}</div>
+                                <div>
+                                    <div class="agent-tile-name">Sisaltoagentti</div>
+                                    <div class="agent-tile-status" style="color: #b8a060;">Kirjoittaa</div>
+                                </div>
+                            </div>
+                            <div class="agent-tile" onclick="navigateTo('agents')">
+                                <div class="agent-tile-pulse pulse-fast" style="color: var(--blue);">\u{1F4CA}</div>
+                                <div>
+                                    <div class="agent-tile-name">Analytiikka</div>
+                                    <div class="agent-tile-status" style="color: var(--blue);">Analysoi</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel reveal reveal-7">
+                    <div class="panel-header">
+                        <span class="panel-title">Hyvaksyntajono</span>
+                        <span class="panel-link" onclick="navigateTo('approvals')">Nayta kaikki \u2192</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="approval-mini-item" data-searchable>
+                            <span class="approval-mini-icon">\u{1F4DD}</span>
+                            <div class="approval-mini-text">
+                                <div class="approval-mini-title">Blogiartikkeli: "10 tapaa parantaa B2B-myyntia"</div>
+                                <div class="approval-mini-meta">Sisaltoagentti \u00B7 2h sitten \u00B7 <span style="color:var(--red)">Korkea</span></div>
+                            </div>
+                            <div class="approval-mini-actions">
+                                <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); quickApprove(this, 'Blogiartikkeli hyvaksytty')">\u2713</button>
+                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); quickReject(this, 'Blogiartikkeli hylatty')">\u2717</button>
+                            </div>
+                        </div>
+                        <div class="approval-mini-item" data-searchable>
+                            <span class="approval-mini-icon">\u{1F4E3}</span>
+                            <div class="approval-mini-text">
+                                <div class="approval-mini-title">Meta-mainoskampanja: "Kevat 2026 Lead Gen"</div>
+                                <div class="approval-mini-meta">Maksettu some \u00B7 4h sitten</div>
+                            </div>
+                            <div class="approval-mini-actions">
+                                <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); quickApprove(this, 'Kampanja hyvaksytty')">\u2713</button>
+                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); quickReject(this, 'Kampanja hylatty')">\u2717</button>
+                            </div>
+                        </div>
+                        <div class="approval-mini-item" data-searchable>
+                            <span class="approval-mini-icon">\u{1F50D}</span>
+                            <div class="approval-mini-text">
+                                <div class="approval-mini-title">Avainsanastrategia: "pilvipalvelut"-klusteri</div>
+                                <div class="approval-mini-meta">Orgaaninen SEO \u00B7 5h sitten</div>
+                            </div>
+                            <div class="approval-mini-actions">
+                                <button class="btn btn-sm btn-success" onclick="event.stopPropagation(); quickApprove(this, 'Strategia hyvaksytty')">\u2713</button>
+                                <button class="btn btn-sm btn-danger" onclick="event.stopPropagation(); quickReject(this, 'Strategia hylatty')">\u2717</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity feed -->
+            <div class="panel reveal reveal-8">
+                <div class="panel-header">
+                    <span class="panel-title">Aktiviteettisyote</span>
+                </div>
+                <div class="panel-body">
+                    <div class="feed-filters">
+                        <button class="feed-filter active" onclick="filterFeed(this, 'all')">Kaikki</button>
+                        <button class="feed-filter" onclick="filterFeed(this, 'seo')">\u{1F50D} SEO</button>
+                        <button class="feed-filter" onclick="filterFeed(this, 'content')">\u{1F4DD} Sisalto</button>
+                        <button class="feed-filter" onclick="filterFeed(this, 'ads')">\u26A1 Mainonta</button>
+                        <button class="feed-filter" onclick="filterFeed(this, 'analytics')">\u{1F4CA} Analytiikka</button>
+                        <button class="feed-filter" onclick="filterFeed(this, 'tech')">\u{1F527} Tekninen</button>
+                    </div>
+                    <div id="activityFeed">
+                        <div class="feed-item" data-type="seo" data-searchable>
+                            <span class="feed-time">14:32</span>
+                            <span class="feed-icon">\u{1F50D}</span>
+                            <span class="feed-text"><strong>SEO-agentti</strong> loysi 12 uutta avainsanamahdollisuutta "pilvipalvelut"-klusterissa — keskimaarainen hakuvolyymi 2 400/kk</span>
+                        </div>
+                        <div class="feed-item" data-type="content" data-searchable>
+                            <span class="feed-time">14:15</span>
+                            <span class="feed-icon">\u{1F4DD}</span>
+                            <span class="feed-text"><strong>Sisaltoagentti</strong> julkaisi artikkelin "Pilvipalveluiden tietoturva 2026" — 2 340 sanaa, 8 avainsanaa optimoitu</span>
+                        </div>
+                        <div class="feed-item" data-type="ads" data-searchable>
+                            <span class="feed-time">13:58</span>
+                            <span class="feed-icon">\u26A1</span>
+                            <span class="feed-text"><strong>Meta Ads</strong> optimoi kampanjan "Kevat Lead Gen" budjettia — siirsi 15% parhaiten toimivaan mainosjoukoon</span>
+                        </div>
+                        <div class="feed-item" data-type="analytics" data-searchable>
+                            <span class="feed-time">13:30</span>
+                            <span class="feed-icon">\u{1F4CA}</span>
+                            <span class="feed-text"><strong>Analytiikka-agentti</strong> viikkoraportti valmis — orgaaninen liikenne +12%, konversioaste 3.2%</span>
+                        </div>
+                        <div class="feed-item" data-type="tech" data-searchable>
+                            <span class="feed-time">12:45</span>
+                            <span class="feed-icon">\u{1F527}</span>
+                            <span class="feed-text"><strong>Tekninen SEO</strong> havaitsi ja korjasi 3 rikkinaista linkkia sivustolla — 301-uudelleenohjaukset lisatty</span>
+                        </div>
+                        <div class="feed-item" data-type="ads" data-searchable>
+                            <span class="feed-time">12:10</span>
+                            <span class="feed-icon">\u{1F4B0}</span>
+                            <span class="feed-text"><strong>SEM-agentti</strong> lisasi 5 uutta negatiivista avainsanaa Google Ads -kampanjaan — arvioidaan saastavan 120 \u20AC/kk</span>
+                        </div>
+                        <div class="feed-item" data-type="content" data-searchable>
+                            <span class="feed-time">11:45</span>
+                            <span class="feed-icon">\u{1F4DD}</span>
+                            <span class="feed-text"><strong>Sisaltoagentti</strong> loi sisaltobriefin: "SaaS-markkinoinnin ROI" — odottaa hyvaksyntaa</span>
+                        </div>
+                        <div class="feed-item" data-type="seo" data-searchable>
+                            <span class="feed-time">11:20</span>
+                            <span class="feed-icon">\u{1F50D}</span>
+                            <span class="feed-text"><strong>SEO-agentti</strong> kilpailija-analyysi valmis: Competitor X julkaisi 4 uutta artikkelia AI-markkinoinnista</span>
+                        </div>
+                        <div class="feed-item" data-type="tech" data-searchable>
+                            <span class="feed-time">10:55</span>
+                            <span class="feed-icon">\u{1F527}</span>
+                            <span class="feed-text"><strong>Tekninen SEO</strong> Core Web Vitals -optimointi: LCP parani 2.8s \u2192 1.9s etusivulla</span>
+                        </div>
+                        <div class="feed-item" data-type="analytics" data-searchable>
+                            <span class="feed-time">10:00</span>
+                            <span class="feed-icon">\u{1F4CA}</span>
+                            <span class="feed-text"><strong>Analytiikka-agentti</strong> havaitsi liikennepiikki: LinkedIn-postaus sai 12 400 nayttoa ja 340 klikkausta</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================
+             VIEW: AGENTS
+             ============================ -->
+        <div class="view" id="view-agents">
+            <div id="agentsListView">
+                <h1 class="page-title">Agentit</h1>
+                <p class="page-subtitle">6 erikoistunutta AI-agenttia tyoskentelee markkinointisi parissa</p>
+
+                <div class="agents-grid">
+                    <!-- Agent 1: Organic SEO -->
+                    <div class="agent-card" style="--card-accent: #5b8fb9;" onclick="showAgentDetail(0)" data-searchable>
+                        <div class="agent-card-header">
+                            <div class="agent-card-icon" style="background: rgba(91, 143, 185, 0.2); color: #5b8fb9;">\u{1F50D}</div>
+                            <div>
+                                <div class="agent-card-name">Orgaaninen SEO</div>
+                                <div class="agent-card-status">
+                                    <span class="agent-status-dot" style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);display:inline-block;"></span>
+                                    <span style="color: var(--green); font-size: 12px;">Aktiivinen</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="agent-card-kpis">
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">Positiot nousseet</span>
+                                <span class="agent-card-kpi-value" style="color: var(--green);">+23</span>
+                            </div>
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">Uudet avainsanat</span>
+                                <span class="agent-card-kpi-value">12</span>
+                            </div>
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">Org. liikenne</span>
+                                <span class="agent-card-kpi-value" style="color: var(--green);">+8%</span>
+                            </div>
+                        </div>
+                        <div class="agent-card-footer">
+                            <span style="font-size: 11px; color: var(--text-muted);">Viimeisin: 5 min sitten</span>
+                            <button class="btn btn-sm btn-outline">Nayta lisaa</button>
+                        </div>
+                    </div>
+
+                    <!-- Agent 2: Technical SEO -->
+                    <div class="agent-card" style="--card-accent: #5cb85c;" onclick="showAgentDetail(1)" data-searchable>
+                        <div class="agent-card-header">
+                            <div class="agent-card-icon" style="background: rgba(92, 184, 92, 0.2); color: #5cb85c;">\u{1F527}</div>
+                            <div>
+                                <div class="agent-card-name">Tekninen SEO</div>
+                                <div class="agent-card-status">
+                                    <span class="agent-status-dot" style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);display:inline-block;"></span>
+                                    <span style="color: var(--green); font-size: 12px;">Aktiivinen</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="agent-card-kpis">
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">Korjatut ongelmat</span>
+                                <span class="agent-card-kpi-value">18</span>
+                            </div>
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">Core Web Vitals</span>
+                                <span class="agent-card-kpi-value" style="color: var(--green);">Hyva</span>
+                            </div>
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">Sivuston nopeus</span>
+                                <span class="agent-card-kpi-value" style="color: var(--green);">1.9s</span>
+                            </div>
+                        </div>
+                        <div class="agent-card-footer">
+                            <span style="font-size: 11px; color: var(--text-muted);">Viimeisin: 15 min sitten</span>
+                            <button class="btn btn-sm btn-outline">Nayta lisaa</button>
+                        </div>
+                    </div>
+
+                    <!-- Agent 3: Meta Ads -->
+                    <div class="agent-card" style="--card-accent: #e8a84c;" onclick="showAgentDetail(2)" data-searchable>
+                        <div class="agent-card-header">
+                            <div class="agent-card-icon" style="background: rgba(232, 168, 76, 0.2); color: #e8a84c;">\u26A1</div>
+                            <div>
+                                <div class="agent-card-name">Maksettu some (Meta)</div>
+                                <div class="agent-card-status">
+                                    <span class="agent-status-dot" style="width:8px;height:8px;border-radius:50%;background:var(--orange);box-shadow:0 0 6px var(--orange);display:inline-block;"></span>
+                                    <span style="color: var(--orange); font-size: 12px;">Optimoi</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="agent-card-kpis">
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">ROAS</span>
+                                <span class="agent-card-kpi-value" style="color: var(--green);">4.8x</span>
+                            </div>
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">CTR</span>
+                                <span class="agent-card-kpi-value">3.4%</span>
+                            </div>
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">Konversiot</span>
+                                <span class="agent-card-kpi-value" style="color: var(--green);">+32%</span>
+                            </div>
+                        </div>
+                        <div class="agent-card-footer">
+                            <span style="font-size: 11px; color: var(--text-muted);">Viimeisin: 2 min sitten</span>
+                            <button class="btn btn-sm btn-outline">Nayta lisaa</button>
+                        </div>
+                    </div>
+
+                    <!-- Agent 4: SEM -->
+                    <div class="agent-card" style="--card-accent: #5b8fb9;" onclick="showAgentDetail(3)" data-searchable>
+                        <div class="agent-card-header">
+                            <div class="agent-card-icon" style="background: rgba(91, 143, 185, 0.2); color: #5b8fb9;">\u{1F4B0}</div>
+                            <div>
+                                <div class="agent-card-name">SEM (Google Ads)</div>
+                                <div class="agent-card-status">
+                                    <span class="agent-status-dot" style="width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);display:inline-block;"></span>
+                                    <span style="color: var(--green); font-size: 12px;">Aktiivinen</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="agent-card-kpis">
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">ROAS</span>
+                                <span class="agent-card-kpi-value" style="color: var(--green);">3.8x</span>
+                            </div>
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">CPA</span>
+                                <span class="agent-card-kpi-value">\u20AC24.50</span>
+                            </div>
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">Konversiot/vk</span>
+                                <span class="agent-card-kpi-value">18</span>
+                            </div>
+                        </div>
+                        <div class="agent-card-footer">
+                            <span style="font-size: 11px; color: var(--text-muted);">Viimeisin: 30 min sitten</span>
+                            <button class="btn btn-sm btn-outline">Nayta lisaa</button>
+                        </div>
+                    </div>
+
+                    <!-- Agent 5: Content -->
+                    <div class="agent-card" style="--card-accent: #b8a060;" onclick="showAgentDetail(4)" data-searchable>
+                        <div class="agent-card-header">
+                            <div class="agent-card-icon" style="background: rgba(184, 160, 96, 0.2); color: #b8a060;">\u{1F4DD}</div>
+                            <div>
+                                <div class="agent-card-name">Sisaltoagentti</div>
+                                <div class="agent-card-status">
+                                    <span class="agent-status-dot" style="width:8px;height:8px;border-radius:50%;background:#b8a060;box-shadow:0 0 6px #b8a060;display:inline-block;"></span>
+                                    <span style="color: #b8a060; font-size: 12px;">Kirjoittaa</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="agent-card-kpis">
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">Julkaistut artikkelit</span>
+                                <span class="agent-card-kpi-value">4</span>
+                            </div>
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">Some-postaukset</span>
+                                <span class="agent-card-kpi-value">12</span>
+                            </div>
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">Odottaa hyvaksyntaa</span>
+                                <span class="agent-card-kpi-value" style="color: var(--orange);">2</span>
+                            </div>
+                        </div>
+                        <div class="agent-card-footer">
+                            <span style="font-size: 11px; color: var(--text-muted);">Viimeisin: 10 min sitten</span>
+                            <button class="btn btn-sm btn-outline">Nayta lisaa</button>
+                        </div>
+                    </div>
+
+                    <!-- Agent 6: Analytics -->
+                    <div class="agent-card" style="--card-accent: #5ba4b5;" onclick="showAgentDetail(5)" data-searchable>
+                        <div class="agent-card-header">
+                            <div class="agent-card-icon" style="background: rgba(91, 164, 181, 0.2); color: #5ba4b5;">\u{1F4CA}</div>
+                            <div>
+                                <div class="agent-card-name">Analytiikka & Raportointi</div>
+                                <div class="agent-card-status">
+                                    <span class="agent-status-dot" style="width:8px;height:8px;border-radius:50%;background:var(--blue);box-shadow:0 0 6px var(--blue);display:inline-block;"></span>
+                                    <span style="color: var(--blue); font-size: 12px;">Analysoi</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="agent-card-kpis">
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">Raportit viikolla</span>
+                                <span class="agent-card-kpi-value">3</span>
+                            </div>
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">Insightit</span>
+                                <span class="agent-card-kpi-value">8</span>
+                            </div>
+                            <div class="agent-card-kpi">
+                                <span class="agent-card-kpi-label">Data-pisteet</span>
+                                <span class="agent-card-kpi-value">24k</span>
+                            </div>
+                        </div>
+                        <div class="agent-card-footer">
+                            <span style="font-size: 11px; color: var(--text-muted);">Viimeisin: 1h sitten</span>
+                            <button class="btn btn-sm btn-outline">Nayta lisaa</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Detail View -->
+            <div class="agent-detail" id="agentDetailView">
+                <div class="agent-detail-header">
+                    <button class="agent-detail-back" onclick="hideAgentDetail()">\u2190</button>
+                    <div class="agent-card-icon" id="agentDetailIcon" style="width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;"></div>
+                    <div>
+                        <h1 class="page-title" id="agentDetailName" style="margin-bottom:0;"></h1>
+                        <div id="agentDetailStatus" style="font-size:13px; margin-top:4px;"></div>
+                    </div>
+                    <button class="btn btn-danger" style="margin-left:auto;" id="agentStopBtn" onclick="showStopConfirmation()">\u23F8 Pysayta agentti</button>
+                </div>
+
+                <div class="agent-detail-kpis" id="agentDetailKpis"></div>
+
+                <div class="chart-container" style="margin-top: 24px;">
+                    <div class="panel-title" style="margin-bottom: 16px;">Avainsanapositiot (Top 20) — 30 paivaa</div>
+                    <canvas id="agentChart" height="300"></canvas>
+                </div>
+
+                <div class="dashboard-grid" style="margin-top: 16px;">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <span class="panel-title">Viimeisimmat toimenpiteet</span>
+                        </div>
+                        <div class="panel-body" id="agentActions"></div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <span class="panel-title">Lokikirja</span>
+                        </div>
+                        <div class="panel-body" id="agentLog"></div>
+                    </div>
+                </div>
+
+                <div class="panel" style="margin-top: 16px;">
+                    <div class="panel-header">
+                        <span class="panel-title">Autonomiatasot</span>
+                    </div>
+                    <div class="panel-body" id="agentAutonomy"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================
+             VIEW: CONTENT
+             ============================ -->
+        <div class="view" id="view-content">
+            <h1 class="page-title">Sisallot</h1>
+
+            <div class="tabs">
+                <div class="tab active" onclick="switchContentTab(this, 'blog')">Blogiartikkelit</div>
+                <div class="tab" onclick="switchContentTab(this, 'social')">Sosiaalinen media</div>
+                <div class="tab" onclick="switchContentTab(this, 'email')">Sahkoposti</div>
+                <div class="tab" onclick="switchContentTab(this, 'landing')">Landing paget</div>
+            </div>
+
+            <div id="contentTabBlog">
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Otsikko</th>
+                            <th>Status</th>
+                            <th>Paivamaara</th>
+                            <th>Avainsanat</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr onclick="openContentModal(0)" data-searchable>
+                            <td><strong>10 tapaa parantaa B2B-myyntia digitaalisella markkinoinnilla</strong></td>
+                            <td><span class="status-badge review">Odottaa</span></td>
+                            <td>3.3.2026</td>
+                            <td><span class="keyword-tag">B2B-myynti</span><span class="keyword-tag">digimarkkinointi</span></td>
+                        </tr>
+                        <tr onclick="openContentModal(1)" data-searchable>
+                            <td><strong>Pilvipalveluiden tietoturva 2026 — Kattava opas</strong></td>
+                            <td><span class="status-badge published">Julkaistu</span></td>
+                            <td>2.3.2026</td>
+                            <td><span class="keyword-tag">pilvipalvelut</span><span class="keyword-tag">tietoturva</span></td>
+                        </tr>
+                        <tr onclick="openContentModal(2)" data-searchable>
+                            <td><strong>SaaS-markkinoinnin ROI: Miten mittaat onnistumisen</strong></td>
+                            <td><span class="status-badge draft">Luonnos</span></td>
+                            <td>1.3.2026</td>
+                            <td><span class="keyword-tag">SaaS</span><span class="keyword-tag">ROI</span><span class="keyword-tag">markkinointi</span></td>
+                        </tr>
+                        <tr onclick="openContentModal(3)" data-searchable>
+                            <td><strong>AI-markkinoinnin trendit: Mita odottaa vuonna 2026</strong></td>
+                            <td><span class="status-badge published">Julkaistu</span></td>
+                            <td>27.2.2026</td>
+                            <td><span class="keyword-tag">AI</span><span class="keyword-tag">markkinointi</span><span class="keyword-tag">trendit</span></td>
+                        </tr>
+                        <tr onclick="openContentModal(4)" data-searchable>
+                            <td><strong>B2B-markkinoinnin trendit 2026</strong></td>
+                            <td><span class="status-badge scheduled">Ajastettu</span></td>
+                            <td>5.3.2026</td>
+                            <td><span class="keyword-tag">B2B</span><span class="keyword-tag">trendit</span></td>
+                        </tr>
+                        <tr onclick="openContentModal(5)" data-searchable>
+                            <td><strong>Miksi PK-yritykset tarvitsevat markkinointiautomaatiota</strong></td>
+                            <td><span class="status-badge published">Julkaistu</span></td>
+                            <td>24.2.2026</td>
+                            <td><span class="keyword-tag">automaatio</span><span class="keyword-tag">PK-yritys</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="contentTabSocial" style="display:none;">
+                <table class="content-table">
+                    <thead><tr><th>Sisalto</th><th>Kanava</th><th>Status</th><th>Paivamaara</th></tr></thead>
+                    <tbody>
+                        <tr data-searchable><td><strong>"5 vinkkia parempaan B2B-sisaltoon" — karuselli</strong></td><td>LinkedIn</td><td><span class="status-badge published">Julkaistu</span></td><td>3.3.2026</td></tr>
+                        <tr data-searchable><td><strong>Asiakastarina: TechFlow +40% liikennetta</strong></td><td>LinkedIn</td><td><span class="status-badge scheduled">Ajastettu</span></td><td>4.3.2026</td></tr>
+                        <tr data-searchable><td><strong>Infograafi: AI vs. perinteinen markkinointi</strong></td><td>Instagram</td><td><span class="status-badge draft">Luonnos</span></td><td>—</td></tr>
+                        <tr data-searchable><td><strong>"Tiesitko?" — tietoturvatilastot</strong></td><td>LinkedIn</td><td><span class="status-badge published">Julkaistu</span></td><td>1.3.2026</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="contentTabEmail" style="display:none;">
+                <table class="content-table">
+                    <thead><tr><th>Kampanja</th><th>Vastaanottajat</th><th>Status</th><th>Avausprosentti</th></tr></thead>
+                    <tbody>
+                        <tr data-searchable><td><strong>Kuukausikatsaus — Maaliskuu 2026</strong></td><td>1 240</td><td><span class="status-badge draft">Luonnos</span></td><td>—</td></tr>
+                        <tr data-searchable><td><strong>Uusi blogiartikkeli: Pilvipalveluiden tietoturva</strong></td><td>1 240</td><td><span class="status-badge published">Lahetetty</span></td><td>34.2%</td></tr>
+                        <tr data-searchable><td><strong>Webinar-kutsu: AI markkinoinnissa</strong></td><td>890</td><td><span class="status-badge published">Lahetetty</span></td><td>28.7%</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="contentTabLanding" style="display:none;">
+                <table class="content-table">
+                    <thead><tr><th>Sivu</th><th>Konversio</th><th>Status</th><th>Liikenne/vk</th></tr></thead>
+                    <tbody>
+                        <tr data-searchable><td><strong>/demo — Varaa demo</strong></td><td>4.2%</td><td><span class="status-badge published">Aktiivinen</span></td><td>890</td></tr>
+                        <tr data-searchable><td><strong>/whitepaper — AI-markkinoinnin opas</strong></td><td>12.5%</td><td><span class="status-badge published">Aktiivinen</span></td><td>450</td></tr>
+                        <tr data-searchable><td><strong>/webinar — Kevat 2026 webinar</strong></td><td>8.1%</td><td><span class="status-badge scheduled">Ajastettu</span></td><td>—</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ============================
+             VIEW: APPROVALS
+             ============================ -->
+        <div class="view" id="view-approvals">
+            <h1 class="page-title">Hyvaksynnat</h1>
+            <p class="page-subtitle" id="approvalsSubtitle">5 kohdetta odottaa hyvaksyntaasi</p>
+
+            <div class="filter-bar">
+                <button class="filter-btn active" onclick="filterApprovals(this, 'all')">Kaikki (5)</button>
+                <button class="filter-btn" onclick="filterApprovals(this, 'high')">\u{1F534} Korkea (1)</button>
+                <button class="filter-btn" onclick="filterApprovals(this, 'content')">\u{1F4DD} Sisalto (2)</button>
+                <button class="filter-btn" onclick="filterApprovals(this, 'campaign')">\u{1F4E3} Kampanjat (2)</button>
+                <span class="filter-spacer"></span>
+                <button class="btn btn-primary" onclick="approveAll()">Hyvaksy kaikki</button>
+            </div>
+
+            <div id="approvalsList">
+                <div class="approval-card" data-priority="high" data-type="content" id="approval-0" data-searchable data-deadline="7200">
+                    <div class="approval-card-header">
+                        <span class="approval-card-icon">\u{1F4DD}</span>
+                        <div class="approval-card-content">
+                            <div class="approval-card-title">Blogiartikkeli: "10 tapaa parantaa B2B-myyntia"</div>
+                            <div class="approval-card-meta">
+                                <span>Agentti: Sisaltoagentti</span>
+                                <span>Luotu: 2h sitten</span>
+                                <span>2 340 sanaa</span>
+                            </div>
+                        </div>
+                        <span class="approval-card-priority high">Korkea</span>
+                    </div>
+                    <div class="approval-card-desc">Kattava artikkeli B2B-myynnin tehostamisesta digitaalisen markkinoinnin keinoin. Sisaltaa konkreettisia esimerkkeja ja toimintaohjeita. Optimoitu avainsanoille: "B2B-myynti", "digimarkkinointi", "myyntistrategia".</div>
+                    <div class="approval-card-actions">
+                        <button class="btn btn-outline" onclick="openContentModal(0)">Esikatsele</button>
+                        <button class="btn btn-success" onclick="approveItem('approval-0')">\u2713 Hyvaksy</button>
+                        <button class="btn btn-danger" onclick="rejectItem('approval-0')">\u2717 Hylkaa</button>
+                        <div class="approval-countdown" data-countdown="7200">
+                            <span class="countdown-icon">\u23F0</span>
+                            <span class="countdown-text">2:00:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="approval-card" data-priority="normal" data-type="campaign" id="approval-1" data-searchable data-deadline="14400">
+                    <div class="approval-card-header">
+                        <span class="approval-card-icon">\u{1F4E3}</span>
+                        <div class="approval-card-content">
+                            <div class="approval-card-title">Meta-mainoskampanja: "Kevat 2026 Lead Gen"</div>
+                            <div class="approval-card-meta">
+                                <span>Agentti: Maksettu some</span>
+                                <span>Budjetti: 500 \u20AC/pv</span>
+                                <span>Kesto: 14 paivaa</span>
+                            </div>
+                        </div>
+                        <span class="approval-card-priority normal">Normaali</span>
+                    </div>
+                    <div class="approval-card-desc">Uusi lead generation -kampanja Facebookiin ja Instagramiin. Kohderyhma: B2B-paattajat, 30-55v. Arvioitu tavoittavuus: 45 000 — 65 000 henkiloa. 3 mainosvariaatiota A/B-testiin.</div>
+                    <div class="approval-card-actions">
+                        <button class="btn btn-outline">Esikatsele</button>
+                        <button class="btn btn-success" onclick="approveItem('approval-1')">\u2713 Hyvaksy</button>
+                        <button class="btn btn-danger" onclick="rejectItem('approval-1')">\u2717 Hylkaa</button>
+                        <div class="approval-countdown" data-countdown="14400">
+                            <span class="countdown-icon">\u23F0</span>
+                            <span class="countdown-text">4:00:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="approval-card" data-priority="normal" data-type="content" id="approval-2" data-searchable data-deadline="18000">
+                    <div class="approval-card-header">
+                        <span class="approval-card-icon">\u{1F50D}</span>
+                        <div class="approval-card-content">
+                            <div class="approval-card-title">Avainsanastrategia: "pilvipalvelut"-klusteri</div>
+                            <div class="approval-card-meta">
+                                <span>Agentti: Orgaaninen SEO</span>
+                                <span>35 avainsanaa</span>
+                                <span>Arvioitu liikenne: +2 400/kk</span>
+                            </div>
+                        </div>
+                        <span class="approval-card-priority normal">Normaali</span>
+                    </div>
+                    <div class="approval-card-desc">Uusi avainsanaklusteri "pilvipalvelut"-teeman ymparille. Sisaltaa 35 avainsanaa, joista 12 matalan kilpailun pitkan hannan avainsanaa. Sisaltosuunnitelma: 6 artikkelia + 2 landing pagea.</div>
+                    <div class="approval-card-actions">
+                        <button class="btn btn-outline">Tarkastele</button>
+                        <button class="btn btn-success" onclick="approveItem('approval-2')">\u2713 Hyvaksy</button>
+                        <button class="btn btn-danger" onclick="rejectItem('approval-2')">\u2717 Hylkaa</button>
+                        <div class="approval-countdown" data-countdown="18000">
+                            <span class="countdown-icon">\u23F0</span>
+                            <span class="countdown-text">5:00:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="approval-card" data-priority="normal" data-type="campaign" id="approval-3" data-searchable data-deadline="21600">
+                    <div class="approval-card-header">
+                        <span class="approval-card-icon">\u{1F527}</span>
+                        <div class="approval-card-content">
+                            <div class="approval-card-title">Redirect-ehdotus: 5 sivua \u2192 uudet URLit</div>
+                            <div class="approval-card-meta">
+                                <span>Agentti: Tekninen SEO</span>
+                                <span>Vaikutus: Keskisuuri</span>
+                                <span>5 uudelleenohjausta</span>
+                            </div>
+                        </div>
+                        <span class="approval-card-priority normal">Normaali</span>
+                    </div>
+                    <div class="approval-card-desc">Viisi vanhentunutta URL-osoitetta ohjataan uusille sivuille 301-uudelleenohjauksella. Estaa 404-virheet ja sailyttaa linkkiarvon. Arvioitu SEO-vaikutus: positiivinen.</div>
+                    <div class="approval-card-actions">
+                        <button class="btn btn-outline">Tarkastele</button>
+                        <button class="btn btn-success" onclick="approveItem('approval-3')">\u2713 Hyvaksy</button>
+                        <button class="btn btn-danger" onclick="rejectItem('approval-3')">\u2717 Hylkaa</button>
+                        <div class="approval-countdown" data-countdown="21600">
+                            <span class="countdown-icon">\u23F0</span>
+                            <span class="countdown-text">6:00:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="approval-card" data-priority="normal" data-type="campaign" id="approval-4" data-searchable data-deadline="28800">
+                    <div class="approval-card-header">
+                        <span class="approval-card-icon">\u{1F4B0}</span>
+                        <div class="approval-card-content">
+                            <div class="approval-card-title">Google Ads budjetin nosto: 50 \u20AC/pv \u2192 75 \u20AC/pv</div>
+                            <div class="approval-card-meta">
+                                <span>Agentti: SEM</span>
+                                <span>+50% budjetti</span>
+                                <span>ROAS: 4.8x</span>
+                            </div>
+                        </div>
+                        <span class="approval-card-priority normal">Normaali</span>
+                    </div>
+                    <div class="approval-card-desc">SEM-agentti ehdottaa budjetin nostoa perustuen viikon konversiotietoihin: +32% konversioissa, ROAS 4.8x. Lisabudjetti kohdistetaan parhaiten toimiviin avainsanaryhmiin.</div>
+                    <div class="approval-card-actions">
+                        <button class="btn btn-outline">Tarkastele</button>
+                        <button class="btn btn-success" onclick="approveItem('approval-4')">\u2713 Hyvaksy</button>
+                        <button class="btn btn-danger" onclick="rejectItem('approval-4')">\u2717 Hylkaa</button>
+                        <div class="approval-countdown" data-countdown="28800">
+                            <span class="countdown-icon">\u23F0</span>
+                            <span class="countdown-text">8:00:00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================
+             VIEW: REPORTS
+             ============================ -->
+        <div class="view" id="view-reports">
+            <h1 class="page-title">Raportit</h1>
+
+            <div class="tabs">
+                <div class="tab active" onclick="switchReportTab(this, 'weekly')">Viikkoraportit</div>
+                <div class="tab" onclick="switchReportTab(this, 'monthly')">Kuukausiraportit</div>
+            </div>
+
+            <div id="reportTabWeekly">
+                <div class="report-list">
+                    <div class="report-item" onclick="openReportModal('weekly', 0)" data-searchable>
+                        <div class="report-icon">\u{1F4CA}</div>
+                        <div class="report-info">
+                            <div class="report-title">Viikkoraportti — Vko 9 (24.2. \u2013 2.3.2026)</div>
+                            <div class="report-date">Luotu: 2.3.2026 klo 18:00</div>
+                            <div class="report-summary">Orgaaninen liikenne +12%, 8 uutta liiidia, ROAS 4.2x, 3 artikkelia julkaistu</div>
+                        </div>
+                        <button class="btn btn-outline btn-sm">Avaa</button>
+                    </div>
+                    <div class="report-item" onclick="openReportModal('weekly', 1)" data-searchable>
+                        <div class="report-icon">\u{1F4CA}</div>
+                        <div class="report-info">
+                            <div class="report-title">Viikkoraportti — Vko 8 (17.2. \u2013 23.2.2026)</div>
+                            <div class="report-date">Luotu: 23.2.2026 klo 18:00</div>
+                            <div class="report-summary">Orgaaninen liikenne +8%, 6 uutta liiidia, ROAS 3.9x, 2 artikkelia julkaistu</div>
+                        </div>
+                        <button class="btn btn-outline btn-sm">Avaa</button>
+                    </div>
+                    <div class="report-item" onclick="openReportModal('weekly', 2)" data-searchable>
+                        <div class="report-icon">\u{1F4CA}</div>
+                        <div class="report-info">
+                            <div class="report-title">Viikkoraportti — Vko 7 (10.2. \u2013 16.2.2026)</div>
+                            <div class="report-date">Luotu: 16.2.2026 klo 18:00</div>
+                            <div class="report-summary">Orgaaninen liikenne +5%, 4 uutta liiidia, ROAS 3.6x, 2 artikkelia julkaistu</div>
+                        </div>
+                        <button class="btn btn-outline btn-sm">Avaa</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="reportTabMonthly" style="display:none;">
+                <div class="report-list">
+                    <div class="report-item" onclick="openReportModal('monthly', 0)" data-searchable>
+                        <div class="report-icon">\u{1F4C8}</div>
+                        <div class="report-info">
+                            <div class="report-title">Kuukausiraportti — Helmikuu 2026</div>
+                            <div class="report-date">Luotu: 1.3.2026</div>
+                            <div class="report-summary">Liikenne 21 450 (+18%), 39 liiidia (+15%), ROAS 3.8x, SEO Health 84/100</div>
+                        </div>
+                        <button class="btn btn-outline btn-sm">Avaa</button>
+                    </div>
+                    <div class="report-item" onclick="openReportModal('monthly', 1)" data-searchable>
+                        <div class="report-icon">\u{1F4C8}</div>
+                        <div class="report-info">
+                            <div class="report-title">Kuukausiraportti — Tammikuu 2026</div>
+                            <div class="report-date">Luotu: 1.2.2026</div>
+                            <div class="report-summary">Liikenne 18 200, 34 liiidia, ROAS 3.2x, SEO Health 79/100</div>
+                        </div>
+                        <button class="btn btn-outline btn-sm">Avaa</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================
+             VIEW: SETTINGS
+             ============================ -->
+        <div class="view" id="view-settings">
+            <h1 class="page-title">Asetukset</h1>
+
+            <div class="tabs">
+                <div class="tab active" onclick="switchSettingsTab(this, 'profile')">Yritysprofiili</div>
+                <div class="tab" onclick="switchSettingsTab(this, 'integrations')">Integraatiot</div>
+                <div class="tab" onclick="switchSettingsTab(this, 'team')">Tiimi</div>
+                <div class="tab" onclick="switchSettingsTab(this, 'agentSettings')">Agenttiasetukset</div>
+                <div class="tab" onclick="switchSettingsTab(this, 'billing')">Laskutus</div>
+            </div>
+
+            <!-- Profile -->
+            <div id="settingsProfile">
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label class="form-label">Yrityksen nimi</label>
+                        <input class="form-input" value="TechFlow Solutions Oy">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Verkkosivusto</label>
+                        <input class="form-input" value="https://techflow.fi">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Toimiala</label>
+                        <input class="form-input" value="IT-palvelut > Pilvipalvelut">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Yrityksen kuvaus</label>
+                        <textarea class="form-input" rows="3">Tarjoamme pilvipalveluratkaisuja PK-yrityksille. Autamme yrityksia siirtymaan pilveen turvallisesti ja kustannustehokkaasti.</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Henkilostomaara</label>
+                        <input class="form-input" value="25">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Kohdemarkkinat</label>
+                        <input class="form-input" value="Suomi, Ruotsi">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Palvelukielet</label>
+                        <input class="form-input" value="Suomi, Englanti">
+                    </div>
+                    <button class="btn btn-primary btn-lg">Tallenna muutokset</button>
+                </div>
+            </div>
+
+            <!-- Integrations -->
+            <div id="settingsIntegrations" style="display:none;">
+                <div class="integration-grid">
+                    <div class="integration-card">
+                        <span class="integration-icon">\u{1F4CA}</span>
+                        <div class="integration-info">
+                            <div class="integration-name">Google Analytics 4</div>
+                            <div class="integration-status connected">\u2713 Yhdistetty</div>
+                        </div>
+                        <button class="btn btn-sm btn-outline">Asetukset</button>
+                    </div>
+                    <div class="integration-card">
+                        <span class="integration-icon">\u{1F50D}</span>
+                        <div class="integration-info">
+                            <div class="integration-name">Google Search Console</div>
+                            <div class="integration-status connected">\u2713 Yhdistetty</div>
+                        </div>
+                        <button class="btn btn-sm btn-outline">Asetukset</button>
+                    </div>
+                    <div class="integration-card">
+                        <span class="integration-icon">\u{1F4B0}</span>
+                        <div class="integration-info">
+                            <div class="integration-name">Google Ads</div>
+                            <div class="integration-status connected">\u2713 Yhdistetty</div>
+                        </div>
+                        <button class="btn btn-sm btn-outline">Asetukset</button>
+                    </div>
+                    <div class="integration-card">
+                        <span class="integration-icon">\u{1F4E3}</span>
+                        <div class="integration-info">
+                            <div class="integration-name">Meta Business Suite</div>
+                            <div class="integration-status connected">\u2713 Yhdistetty</div>
+                        </div>
+                        <button class="btn btn-sm btn-outline">Asetukset</button>
+                    </div>
+                    <div class="integration-card">
+                        <span class="integration-icon">\u{1F4DD}</span>
+                        <div class="integration-info">
+                            <div class="integration-name">WordPress</div>
+                            <div class="integration-status connected">\u2713 Yhdistetty</div>
+                        </div>
+                        <button class="btn btn-sm btn-outline">Asetukset</button>
+                    </div>
+                    <div class="integration-card">
+                        <span class="integration-icon">\u{1F465}</span>
+                        <div class="integration-info">
+                            <div class="integration-name">HubSpot CRM</div>
+                            <div class="integration-status disconnected">Ei yhdistetty</div>
+                        </div>
+                        <button class="btn btn-sm btn-primary">Yhdista</button>
+                    </div>
+                    <div class="integration-card">
+                        <span class="integration-icon">\u{1F4E7}</span>
+                        <div class="integration-info">
+                            <div class="integration-name">Mailchimp</div>
+                            <div class="integration-status disconnected">Ei yhdistetty</div>
+                        </div>
+                        <button class="btn btn-sm btn-primary">Yhdista</button>
+                    </div>
+                    <div class="integration-card">
+                        <span class="integration-icon">\u{1F6D2}</span>
+                        <div class="integration-info">
+                            <div class="integration-name">Shopify</div>
+                            <div class="integration-status disconnected">Ei yhdistetty</div>
+                        </div>
+                        <button class="btn btn-sm btn-primary">Yhdista</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team -->
+            <div id="settingsTeam" style="display:none;">
+                <div class="settings-form">
+                    <table class="content-table">
+                        <thead><tr><th>Nimi</th><th>Rooli</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td>Mikko Korhonen</td><td>Omistaja</td><td><span class="status-badge published">Aktiivinen</span></td></tr>
+                            <tr><td>Sanna Virtanen</td><td>Markkinointipaallikko</td><td><span class="status-badge published">Aktiivinen</span></td></tr>
+                            <tr><td>Toni Makinen</td><td>Katselija</td><td><span class="status-badge scheduled">Kutsuttu</span></td></tr>
+                        </tbody>
+                    </table>
+                    <button class="btn btn-primary" style="margin-top:16px;">+ Kutsu tiimin jasen</button>
+                </div>
+            </div>
+
+            <!-- Agent Settings -->
+            <div id="settingsAgentSettings" style="display:none;">
+                <div class="settings-form" style="max-width:700px;">
+                    <div class="panel">
+                        <div class="panel-header"><span class="panel-title">Autonomiatasojen hallinta</span></div>
+                        <div class="panel-body">
+                            <div class="autonomy-control">
+                                <span class="autonomy-label">Sisallon julkaisu</span>
+                                <select class="autonomy-select">
+                                    <option>Hyvaksynta etukäteen</option>
+                                    <option>Ilmoitus jalkikateen</option>
+                                    <option>Taysin autonominen</option>
+                                </select>
+                            </div>
+                            <div class="autonomy-control">
+                                <span class="autonomy-label">Kampanjan kaynnistys</span>
+                                <select class="autonomy-select">
+                                    <option>Hyvaksynta etukäteen</option>
+                                    <option>Ilmoitus jalkikateen</option>
+                                    <option>Taysin autonominen</option>
+                                </select>
+                            </div>
+                            <div class="autonomy-control">
+                                <span class="autonomy-label">Budjettimuutokset (>20%)</span>
+                                <select class="autonomy-select">
+                                    <option>Hyvaksynta etukäteen</option>
+                                    <option>Ilmoitus jalkikateen</option>
+                                </select>
+                            </div>
+                            <div class="autonomy-control">
+                                <span class="autonomy-label">Pienet optimoinnit</span>
+                                <select class="autonomy-select">
+                                    <option selected>Ilmoitus jalkikateen</option>
+                                    <option>Taysin autonominen</option>
+                                </select>
+                            </div>
+                            <div class="autonomy-control">
+                                <span class="autonomy-label">Analyysi & monitorointi</span>
+                                <select class="autonomy-select">
+                                    <option selected>Taysin autonominen</option>
+                                    <option>Ilmoitus jalkikateen</option>
+                                </select>
+                            </div>
+                            <div class="autonomy-control">
+                                <span class="autonomy-label">Raportointi</span>
+                                <select class="autonomy-select">
+                                    <option selected>Taysin autonominen</option>
+                                    <option>Ilmoitus jalkikateen</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <button class="btn btn-danger btn-lg" style="width:100%;" onclick="showEmergencyStopConfirmation()">\u23F8 Pysayta kaikki agentit (hatapysaytys)</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing -->
+            <div id="settingsBilling" style="display:none;">
+                <div class="settings-form">
+                    <div class="panel" style="margin-bottom:20px;">
+                        <div class="panel-body">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+                                <div>
+                                    <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">Nykyinen tilaus</div>
+                                    <div style="font-family:var(--font-display);font-size:24px;font-weight:600;">PRO</div>
+                                </div>
+                                <div style="text-align:right;">
+                                    <div style="font-family:var(--font-display);font-size:28px;font-weight:600;">599 \u20AC<span style="font-size:14px;color:var(--text-muted);">/kk</span></div>
+                                </div>
+                            </div>
+                            <div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">
+                                6 AI-agenttia, rajattomat sisallot, premium-integraatiot, prioriteettituki
+                            </div>
+                            <div style="display:flex;gap:8px;">
+                                <button class="btn btn-outline">Vaihda tilausta</button>
+                                <button class="btn btn-outline">Laskutushistoria</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Seuraava laskutuspaiva</label>
+                        <input class="form-input" value="1.4.2026" disabled>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Maksutapa</label>
+                        <input class="form-input" value="Visa \u2022\u2022\u2022\u2022 4242" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- CONTENT PREVIEW MODAL -->
+<div class="modal-overlay" id="contentModal" onclick="closeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h2 id="modalTitle">Artikkelin esikatselu</h2>
+            <button class="modal-close" onclick="closeModalForce()">\u2715</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<!-- REPORT MODAL -->
+<div class="modal-overlay" id="reportModal" onclick="closeReportModal(event)">
+    <div class="modal" onclick="event.stopPropagation()" style="max-width:800px;">
+        <div class="modal-header">
+            <h2 id="reportModalTitle">Raportti</h2>
+            <button class="modal-close" onclick="closeReportModalForce()">\u2715</button>
+        </div>
+        <div class="modal-body" id="reportModalBody"></div>
+    </div>
+</div>
+
+<!-- BACK TO PRESENTATION -->
+<a href="presentation.html" class="back-to-presentation">\u2190 Takaisin esitykseen</a>
+
+<script>
+// =============================================
+// NAVIGATION WITH VIEW TRANSITIONS
+// =============================================
+let currentView = 'dashboard';
+let approvalCount = 5;
+let currentAgentIdx = -1;
+
+function navigateTo(view) {
+    if (currentView === view) return;
+    currentView = view;
+
+    // Hide all views
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active', 'view-entering'));
+
+    // Show target with animation
+    const target = document.getElementById('view-' + view);
+    target.classList.add('active', 'view-entering');
+
+    // Update nav
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelector('[data-view="' + view + '"]').classList.add('active');
+
+    // Reset agent detail when navigating to agents
+    if (view === 'agents') {
+        hideAgentDetail();
+    }
+
+    // Clear search on navigation
+    document.getElementById('globalSearch').value = '';
+    handleSearch('');
+}
+
+// =============================================
+// TOAST NOTIFICATIONS
+// =============================================
+function showToast(message, type) {
+    type = type || 'info';
+    var icons = { success: '\u2705', error: '\u274C', info: '\u2139\uFE0F' };
+    var container = document.getElementById('toastContainer');
+    var toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.innerHTML = '<span class="toast-icon">' + (icons[type] || icons.info) + '</span><span class="toast-text">' + message + '</span><span class="toast-close" onclick="dismissToast(this)">\u2715</span>';
+    container.appendChild(toast);
+
+    setTimeout(function() {
+        if (toast.parentNode) {
+            toast.classList.add('toast-out');
+            setTimeout(function() { if (toast.parentNode) toast.remove(); }, 300);
+        }
+    }, 4000);
+}
+
+function dismissToast(closeBtn) {
+    var toast = closeBtn.parentElement;
+    toast.classList.add('toast-out');
+    setTimeout(function() { if (toast.parentNode) toast.remove(); }, 300);
+}
+
+// =============================================
+// CONFIRMATION DIALOG
+// =============================================
+var pendingConfirmAction = null;
+
+function showConfirmDialog(title, text, actionLabel, onConfirm) {
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmText').textContent = text;
+    document.getElementById('confirmActionBtn').textContent = actionLabel;
+    pendingConfirmAction = onConfirm;
+    document.getElementById('confirmDialog').classList.add('open');
+}
+
+function closeConfirmDialog() {
+    document.getElementById('confirmDialog').classList.remove('open');
+    pendingConfirmAction = null;
+}
+
+function confirmAction() {
+    if (pendingConfirmAction) pendingConfirmAction();
+    closeConfirmDialog();
+}
+
+// =============================================
+// AGENT STOP WITH CONFIRMATION
+// =============================================
+function showStopConfirmation() {
+    var name = agentsData[currentAgentIdx] ? agentsData[currentAgentIdx].name : 'agentti';
+    showConfirmDialog(
+        'Pysayta ' + name + '?',
+        'Agentti lopettaa kaikki kaynniissa olevat tehtavat. Keskeneraiset toimenpiteet peruutetaan. Haluatko jatkaa?',
+        '\u23F8 Pysayta',
+        function() {
+            // Update UI to show stopped state
+            document.getElementById('agentDetailStatus').innerHTML = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--red);margin-right:6px;"></span>Pysaytetty';
+            document.getElementById('agentStopBtn').textContent = '\u25B6 Kaynnista agentti';
+            document.getElementById('agentStopBtn').className = 'btn btn-success';
+            document.getElementById('agentStopBtn').onclick = function() { restartAgent(); };
+            showToast(name + ' pysaytetty onnistuneesti', 'info');
+        }
+    );
+}
+
+function restartAgent() {
+    var agent = agentsData[currentAgentIdx];
+    if (!agent) return;
+    document.getElementById('agentDetailStatus').innerHTML = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + agent.statusColor + ';margin-right:6px;"></span>' + agent.status;
+    document.getElementById('agentStopBtn').textContent = '\u23F8 Pysayta agentti';
+    document.getElementById('agentStopBtn').className = 'btn btn-danger';
+    document.getElementById('agentStopBtn').onclick = function() { showStopConfirmation(); };
+    showToast(agent.name + ' kaynnistetty uudelleen', 'success');
+}
+
+function showEmergencyStopConfirmation() {
+    showConfirmDialog(
+        'Hatapysaytys',
+        'Kaikki 6 agenttia pysaytetaan valittomasti. Kaikki kaynniissa olevat tehtavat peruutetaan. Tata toimintoa ei voi perua.',
+        '\u23F8 Pysayta kaikki',
+        function() {
+            showToast('Kaikki agentit pysaytetty', 'error');
+        }
+    );
+}
+
+// =============================================
+// QUICK APPROVE/REJECT FROM DASHBOARD
+// =============================================
+function quickApprove(btn, message) {
+    var item = btn.closest('.approval-mini-item');
+    item.style.opacity = '0';
+    item.style.transform = 'translateX(30px)';
+    item.style.transition = 'all 0.3s ease';
+    showToast(message, 'success');
+    approvalCount--;
+    updateApprovalBadge();
+    setTimeout(function() { item.remove(); }, 300);
+}
+
+function quickReject(btn, message) {
+    var item = btn.closest('.approval-mini-item');
+    item.style.opacity = '0';
+    item.style.transform = 'translateX(-30px)';
+    item.style.transition = 'all 0.3s ease';
+    showToast(message, 'error');
+    approvalCount--;
+    updateApprovalBadge();
+    setTimeout(function() { item.remove(); }, 300);
+}
+
+// =============================================
+// NOTIFICATIONS
+// =============================================
+function toggleNotifications() {
+    var dd = document.getElementById('notifDropdown');
+    dd.classList.toggle('open');
+}
+
+function markAllRead() {
+    document.querySelectorAll('.notif-item.unread').forEach(function(i) { i.classList.remove('unread'); });
+    document.getElementById('notifBadgeCount').textContent = '0';
+    document.getElementById('notifBadgeCount').style.display = 'none';
+}
+
+document.addEventListener('click', function(e) {
+    var dd = document.getElementById('notifDropdown');
+    var btn = document.getElementById('notifBtn');
+    if (!dd.contains(e.target) && !btn.contains(e.target)) {
+        dd.classList.remove('open');
+    }
+});
+
+// =============================================
+// SPARKLINE CHARTS (60px default, 80px hero)
+// =============================================
+function drawSparkline(canvasId, data, color) {
+    var canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var dpr = window.devicePixelRatio || 1;
+    var rect = canvas.getBoundingClientRect();
+    var h = parseInt(canvas.parentElement.parentElement.classList.contains('hero') ? 80 : 60);
+    canvas.width = rect.width * dpr;
+    canvas.height = h * dpr;
+    canvas.style.height = h + 'px';
+    ctx.scale(dpr, dpr);
+    var w = rect.width;
+    var max = Math.max.apply(null, data);
+    var min = Math.min.apply(null, data);
+    var range = max - min || 1;
+    var step = w / (data.length - 1);
+
+    // Gradient fill
+    var gradient = ctx.createLinearGradient(0, 0, 0, h);
+    gradient.addColorStop(0, color + '40');
+    gradient.addColorStop(1, color + '00');
+
+    ctx.beginPath();
+    ctx.moveTo(0, h);
+    data.forEach(function(v, i) {
+        var x = i * step;
+        var y = h - ((v - min) / range) * (h - 8) - 4;
+        ctx.lineTo(x, y);
+    });
+    ctx.lineTo(w, h);
+    ctx.closePath();
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    data.forEach(function(v, i) {
+        var x = i * step;
+        var y = h - ((v - min) / range) * (h - 8) - 4;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // End dot
+    var lastX = (data.length - 1) * step;
+    var lastY = h - ((data[data.length - 1] - min) / range) * (h - 8) - 4;
+    ctx.beginPath();
+    ctx.arc(lastX, lastY, 3, 0, Math.PI * 2);
+    ctx.fillStyle = color;
+    ctx.fill();
+}
+
+// =============================================
+// KPI COUNT-UP ANIMATION
+// =============================================
+function animateCountUps() {
+    document.querySelectorAll('[data-countup]').forEach(function(el) {
+        var target = parseFloat(el.dataset.countup);
+        var suffix = el.dataset.suffix || '';
+        var decimals = parseInt(el.dataset.decimals) || 0;
+        var separator = target > 999;
+        var duration = 1200;
+        var start = performance.now();
+
+        function update(now) {
+            var elapsed = now - start;
+            var progress = Math.min(elapsed / duration, 1);
+            // Ease out cubic
+            var eased = 1 - Math.pow(1 - progress, 3);
+            var current = target * eased;
+
+            if (decimals > 0) {
+                el.textContent = current.toFixed(decimals) + suffix;
+            } else if (separator) {
+                el.textContent = Math.round(current).toLocaleString('fi-FI') + suffix;
+            } else {
+                el.textContent = Math.round(current) + suffix;
+            }
+
+            if (progress < 1) {
+                requestAnimationFrame(update);
+            }
+        }
+        requestAnimationFrame(update);
+    });
+}
+
+// =============================================
+// ACTIVITY FEED FILTER
+// =============================================
+function filterFeed(btn, type) {
+    document.querySelectorAll('.feed-filter').forEach(function(f) { f.classList.remove('active'); });
+    btn.classList.add('active');
+    document.querySelectorAll('.feed-item').forEach(function(item) {
+        if (type === 'all' || item.dataset.type === type) {
+            item.style.display = 'flex';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+// =============================================
+// LIVE ACTIVITY (simulated)
+// =============================================
+var liveActivities = [
+    { time: '', icon: '\u{1F50D}', text: '<strong>SEO-agentti</strong> paivitti 3 meta-kuvausta paremmilla avainsanoilla', type: 'seo' },
+    { time: '', icon: '\u{1F4DD}', text: '<strong>Sisaltoagentti</strong> aloitti artikkelin kirjoittamisen: "Cloud migration guide"', type: 'content' },
+    { time: '', icon: '\u26A1', text: '<strong>Meta Ads</strong> pysaytti heikosti toimivan mainosjoukon — saasto 45 \u20AC/pv', type: 'ads' },
+    { time: '', icon: '\u{1F4CA}', text: '<strong>Analytiikka-agentti</strong> havaitsi konversiopiikin landing pagella /demo', type: 'analytics' },
+    { time: '', icon: '\u{1F527}', text: '<strong>Tekninen SEO</strong> optimoi 4 kuvan alt-tekstit hakukoneystavallisiksi', type: 'tech' },
+    { time: '', icon: '\u{1F4B0}', text: '<strong>SEM-agentti</strong> loysi 3 uutta konvertoivaa hakutermia', type: 'ads' },
+];
+var liveIndex = 0;
+
+setInterval(function() {
+    var feed = document.getElementById('activityFeed');
+    if (!feed) return;
+    var now = new Date();
+    var timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+    var activity = liveActivities[liveIndex % liveActivities.length];
+    var item = document.createElement('div');
+    item.className = 'feed-item';
+    item.dataset.type = activity.type;
+    item.setAttribute('data-searchable', '');
+    item.innerHTML = '<span class="feed-time">' + timeStr + '</span><span class="feed-icon">' + activity.icon + '</span><span class="feed-text">' + activity.text + '</span>';
+    feed.insertBefore(item, feed.firstChild);
+    while (feed.children.length > 15) {
+        feed.removeChild(feed.lastChild);
+    }
+    liveIndex++;
+}, 15000);
+
+// =============================================
+// AGENTS DETAIL
+// =============================================
+var agentsData = [
+    {
+        name: 'Orgaaninen SEO', icon: '\u{1F50D}', iconBg: 'rgba(91, 143, 185, 0.2)', iconColor: '#5b8fb9',
+        status: 'Aktiivinen', statusColor: 'var(--green)',
+        kpis: [
+            { label: 'Positiot \u25B2', value: '23' },
+            { label: 'Positiot \u25BC', value: '5' },
+            { label: 'Uudet avainsanat', value: '12' },
+            { label: 'Org. liikenne', value: '+8.2%' },
+        ],
+        actions: [
+            'Avainsanatutkimus: "SaaS-markkinointi" -klusteri (35 avainsanaa)',
+            'Sisaltobrief: "B2B-markkinoinnin trendit 2026"',
+            'Kilpailija-analyysi: Competitor X julkaisi 4 uutta artikkelia',
+            'Meta-kuvausten optimointi: 12 sivua paivitetty',
+        ],
+        logs: [
+            { time: '3.3.2026 14:32', text: 'Avainsanatutkimus kaynnistetty: "pilvipalvelut"-klusteri' },
+            { time: '3.3.2026 11:20', text: 'Kilpailija-analyysi valmis: 4 uutta artikkelia havaittu' },
+            { time: '2.3.2026 16:45', text: 'Sisaltobrief luotu ja lahetetty hyvaksyntajonoon' },
+            { time: '2.3.2026 10:00', text: 'Paivittainen positioiden tarkistus: 23 nousua, 5 laskua' },
+            { time: '1.3.2026 14:15', text: 'Meta-kuvaukset optimoitu 12 sivulle' },
+        ],
+        autonomy: [
+            { label: 'Positioiden seuranta', level: 'Taysin autonominen' },
+            { label: 'Avainsanatutkimus', level: 'Taysin autonominen' },
+            { label: 'Sisaltobriefien luonti', level: 'Ilmoitus jalkikateen' },
+            { label: 'Avainsanastrategian muutokset', level: 'Hyvaksynta etukäteen' },
+        ]
+    },
+    {
+        name: 'Tekninen SEO', icon: '\u{1F527}', iconBg: 'rgba(92, 184, 92, 0.2)', iconColor: '#5cb85c',
+        status: 'Aktiivinen', statusColor: 'var(--green)',
+        kpis: [
+            { label: 'Korjatut ongelmat', value: '18' },
+            { label: 'Avoimet ongelmat', value: '3' },
+            { label: 'LCP', value: '1.9s' },
+            { label: 'CLS', value: '0.05' },
+        ],
+        actions: [
+            '301-uudelleenohjaukset: 3 rikkinaista linkkia korjattu',
+            'Core Web Vitals -optimointi: LCP 2.8s \u2192 1.9s',
+            'Kuvien lazy loading lisatty 24 sivulle',
+            'Redirect-ehdotus: 5 sivua (odottaa hyvaksyntaa)',
+        ],
+        logs: [
+            { time: '3.3.2026 12:45', text: 'Rikkinaiset linkit korjattu automaattisesti (3 kpl)' },
+            { time: '3.3.2026 09:00', text: 'Paivittainen sivuston skannaus suoritettu' },
+            { time: '2.3.2026 15:30', text: 'Core Web Vitals -optimointiraportti valmis' },
+            { time: '2.3.2026 08:00', text: 'Sitemap.xml paivitetty automaattisesti' },
+        ],
+        autonomy: [
+            { label: 'Sivuston skannaus', level: 'Taysin autonominen' },
+            { label: 'Rikkinaisten linkkien korjaus', level: 'Taysin autonominen' },
+            { label: 'Tekniset optimoinnit', level: 'Ilmoitus jalkikateen' },
+            { label: 'Redirect-muutokset', level: 'Hyvaksynta etukäteen' },
+        ]
+    },
+    {
+        name: 'Maksettu some (Meta)', icon: '\u26A1', iconBg: 'rgba(232, 168, 76, 0.2)', iconColor: '#e8a84c',
+        status: 'Optimoi', statusColor: 'var(--orange)',
+        kpis: [
+            { label: 'ROAS', value: '4.8x' },
+            { label: 'CTR', value: '3.4%' },
+            { label: 'Konversiot/vk', value: '28' },
+            { label: 'CPA', value: '\u20AC18.20' },
+        ],
+        actions: [
+            'Budjetin siirto: 15% parhaiten toimivaan mainosjoukoon',
+            'Heikon mainosjoukon pysaytys: saasto 45 \u20AC/pv',
+            'A/B-testin analysointi: versio B +24% CTR',
+            'Kampanjaehdotus: "Kevat 2026 Lead Gen" (odottaa hyvaksyntaa)',
+        ],
+        logs: [
+            { time: '3.3.2026 13:58', text: 'Kampanjabudjetti optimoitu: 15% siirretty' },
+            { time: '3.3.2026 10:30', text: 'A/B-testin tulokset analysoitu' },
+            { time: '2.3.2026 16:00', text: 'Uusi kampanjaehdotus luotu' },
+            { time: '2.3.2026 09:15', text: 'Paivittainen suorituskykyraportti generoitu' },
+        ],
+        autonomy: [
+            { label: 'Suorituskyvyn seuranta', level: 'Taysin autonominen' },
+            { label: 'Budjetin pienet siirrot (<10%)', level: 'Ilmoitus jalkikateen' },
+            { label: 'Kampanjoiden luonti', level: 'Hyvaksynta etukäteen' },
+            { label: 'Budjettimuutokset (>20%)', level: 'Hyvaksynta etukäteen' },
+        ]
+    },
+    {
+        name: 'SEM (Google Ads)', icon: '\u{1F4B0}', iconBg: 'rgba(91, 143, 185, 0.2)', iconColor: '#5b8fb9',
+        status: 'Aktiivinen', statusColor: 'var(--green)',
+        kpis: [
+            { label: 'ROAS', value: '3.8x' },
+            { label: 'CPA', value: '\u20AC24.50' },
+            { label: 'Konversiot/vk', value: '18' },
+            { label: 'Klikkaukset/vk', value: '1 240' },
+        ],
+        actions: [
+            'Negatiiviset avainsanat: 5 uutta lisatty (saasto 120 \u20AC/kk)',
+            'Budjetin nosto ehdotettu: 50 \u2192 75 \u20AC/pv (odottaa hyvaksyntaa)',
+            'Mainostekstien A/B-testi kaynnistetty',
+            'Konvertoivien hakutermien analyysi: 3 uutta loydetty',
+        ],
+        logs: [
+            { time: '3.3.2026 12:10', text: 'Negatiiviset avainsanat lisatty kampanjaan' },
+            { time: '3.3.2026 08:30', text: 'Paivittainen budjettitarkistus suoritettu' },
+            { time: '2.3.2026 14:00', text: 'Budjetin nostosuositus luotu' },
+            { time: '2.3.2026 10:00', text: 'Hakutermiraportti analysoitu' },
+        ],
+        autonomy: [
+            { label: 'Seuranta & raportointi', level: 'Taysin autonominen' },
+            { label: 'Negatiiviset avainsanat', level: 'Ilmoitus jalkikateen' },
+            { label: 'Mainostekstien muutokset', level: 'Hyvaksynta etukäteen' },
+            { label: 'Budjettimuutokset', level: 'Hyvaksynta etukäteen' },
+        ]
+    },
+    {
+        name: 'Sisaltoagentti', icon: '\u{1F4DD}', iconBg: 'rgba(184, 160, 96, 0.2)', iconColor: '#b8a060',
+        status: 'Kirjoittaa', statusColor: '#b8a060',
+        kpis: [
+            { label: 'Julkaistut artikkelit', value: '4' },
+            { label: 'Some-postaukset', value: '12' },
+            { label: 'Odottaa hyvaksyntaa', value: '2' },
+            { label: 'Sanat tuotettu', value: '12 450' },
+        ],
+        actions: [
+            'Blogiartikkeli: "10 tapaa parantaa B2B-myyntia" (odottaa hyvaksyntaa)',
+            'LinkedIn-postaus: "5 vinkkia B2B-sisaltoon" (julkaistu)',
+            'Sisaltobrief: "SaaS-markkinoinnin ROI" (luonnos)',
+            'Artikkeli: "Pilvipalveluiden tietoturva 2026" (julkaistu)',
+        ],
+        logs: [
+            { time: '3.3.2026 14:15', text: 'Artikkeli "Pilvipalveluiden tietoturva" julkaistu' },
+            { time: '3.3.2026 11:45', text: 'Sisaltobrief luotu: "SaaS-markkinoinnin ROI"' },
+            { time: '3.3.2026 09:00', text: 'Paivittainen sisaltosuunnittelu aloitettu' },
+            { time: '2.3.2026 16:30', text: 'LinkedIn-postauksen A/B-variaatiot luotu' },
+        ],
+        autonomy: [
+            { label: 'Sisaltosuunnittelu', level: 'Taysin autonominen' },
+            { label: 'Sisaltobriefien luonti', level: 'Ilmoitus jalkikateen' },
+            { label: 'Artikkelien julkaisu', level: 'Hyvaksynta etukäteen' },
+            { label: 'Some-julkaisut', level: 'Hyvaksynta etukäteen' },
+        ]
+    },
+    {
+        name: 'Analytiikka & Raportointi', icon: '\u{1F4CA}', iconBg: 'rgba(91, 164, 181, 0.2)', iconColor: '#5ba4b5',
+        status: 'Analysoi', statusColor: 'var(--blue)',
+        kpis: [
+            { label: 'Raportit viikolla', value: '3' },
+            { label: 'Insightit', value: '8' },
+            { label: 'Data-pisteet', value: '24k' },
+            { label: 'Halytykset', value: '2' },
+        ],
+        actions: [
+            'Viikkoraportti Vko 9 generoitu ja lahetetty',
+            'Liikennepiikki havaittu: LinkedIn-postaus 12 400 nayttoa',
+            'Konversioanalyysi: /demo-sivu 4.2% konversioaste',
+            'Kilpailija-benchmarking paivitetty',
+        ],
+        logs: [
+            { time: '3.3.2026 13:30', text: 'Viikkoraportti valmistunut ja jaettu' },
+            { time: '3.3.2026 10:00', text: 'Aamuanalyysi: yon data keratty ja analysoitu' },
+            { time: '2.3.2026 18:00', text: 'Paivittainen raportti generoitu' },
+            { time: '2.3.2026 12:00', text: 'Liikennepiikkihalytys: LinkedIn-postaus' },
+        ],
+        autonomy: [
+            { label: 'Datan kerays & seuranta', level: 'Taysin autonominen' },
+            { label: 'Raporttien generointi', level: 'Taysin autonominen' },
+            { label: 'Halytysten lahettaminen', level: 'Taysin autonominen' },
+            { label: 'Strategiasuositukset', level: 'Ilmoitus jalkikateen' },
+        ]
+    },
+];
+
+function showAgentDetail(idx) {
+    currentAgentIdx = idx;
+    var agent = agentsData[idx];
+    document.getElementById('agentsListView').style.display = 'none';
+    var detail = document.getElementById('agentDetailView');
+    detail.classList.add('active');
+
+    document.getElementById('agentDetailIcon').style.background = agent.iconBg;
+    document.getElementById('agentDetailIcon').style.color = agent.iconColor;
+    document.getElementById('agentDetailIcon').textContent = agent.icon;
+    document.getElementById('agentDetailName').textContent = agent.name;
+    document.getElementById('agentDetailStatus').innerHTML = '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:' + agent.statusColor + ';margin-right:6px;"></span>' + agent.status;
+
+    // Reset stop button
+    document.getElementById('agentStopBtn').textContent = '\u23F8 Pysayta agentti';
+    document.getElementById('agentStopBtn').className = 'btn btn-danger';
+    document.getElementById('agentStopBtn').onclick = function() { showStopConfirmation(); };
+
+    // KPIs
+    var kpisEl = document.getElementById('agentDetailKpis');
+    kpisEl.innerHTML = agent.kpis.map(function(k) { return '<div class="agent-kpi-card"><div class="kpi-value">' + k.value + '</div><div class="kpi-label">' + k.label + '</div></div>'; }).join('');
+
+    // Actions
+    var actionsEl = document.getElementById('agentActions');
+    actionsEl.innerHTML = agent.actions.map(function(a) { return '<div style="padding:8px 0;border-bottom:1px solid var(--border-subtle);font-size:13px;color:var(--text-secondary);">' + a + '</div>'; }).join('');
+
+    // Logs
+    var logsEl = document.getElementById('agentLog');
+    logsEl.innerHTML = agent.logs.map(function(l) { return '<div class="log-item"><span class="log-time">' + l.time + '</span><span class="log-text">' + l.text + '</span></div>'; }).join('');
+
+    // Autonomy
+    var autoEl = document.getElementById('agentAutonomy');
+    autoEl.innerHTML = agent.autonomy.map(function(a) { return '<div class="autonomy-control"><span class="autonomy-label">' + a.label + '</span><select class="autonomy-select"><option' + (a.level === 'Taysin autonominen' ? ' selected' : '') + '>Taysin autonominen</option><option' + (a.level === 'Ilmoitus jalkikateen' ? ' selected' : '') + '>Ilmoitus jalkikateen</option><option' + (a.level === 'Hyvaksynta etukäteen' ? ' selected' : '') + '>Hyvaksynta etukäteen</option></select></div>'; }).join('');
+
+    // Draw chart
+    drawAgentChart();
+}
+
+function hideAgentDetail() {
+    document.getElementById('agentsListView').style.display = 'block';
+    document.getElementById('agentDetailView').classList.remove('active');
+    currentAgentIdx = -1;
+}
+
+function drawAgentChart() {
+    var canvas = document.getElementById('agentChart');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var dpr = window.devicePixelRatio || 1;
+    var rect = canvas.parentElement.getBoundingClientRect();
+    var w = rect.width - 40;
+    var h = 300;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    canvas.style.width = w + 'px';
+    canvas.style.height = h + 'px';
+    ctx.scale(dpr, dpr);
+
+    var data = [15, 14, 13, 14, 12, 11, 10, 11, 9, 8, 9, 8, 7, 8, 7, 6, 7, 6, 5, 6, 5, 5, 4, 5, 4, 4, 3, 4, 3, 3];
+    var max = 20;
+    var min = 1;
+    var range = max - min;
+    var padding = 40;
+
+    // Grid lines
+    ctx.strokeStyle = 'rgba(212, 136, 43, 0.08)';
+    ctx.lineWidth = 1;
+    for (var i = 0; i <= 4; i++) {
+        var y = padding + (i / 4) * (h - padding * 2);
+        ctx.beginPath();
+        ctx.moveTo(padding, y);
+        ctx.lineTo(w, y);
+        ctx.stroke();
+        ctx.fillStyle = '#6b665c';
+        ctx.font = '11px Switzer';
+        ctx.fillText(Math.round(max - (i / 4) * range), 4, y + 4);
+    }
+
+    // Day labels
+    for (var i = 0; i < data.length; i += 5) {
+        var x = padding + i * ((w - padding) / (data.length - 1));
+        ctx.fillStyle = '#6b665c';
+        ctx.font = '11px Switzer';
+        ctx.fillText((i + 1) + '.pv', x - 8, h - 8);
+    }
+
+    // Gradient
+    var gradient = ctx.createLinearGradient(0, 0, 0, h);
+    gradient.addColorStop(0, 'rgba(212, 136, 43, 0.25)');
+    gradient.addColorStop(1, 'rgba(212, 136, 43, 0)');
+
+    ctx.beginPath();
+    ctx.moveTo(padding, h - padding);
+    data.forEach(function(v, i) {
+        var x = padding + i * ((w - padding) / (data.length - 1));
+        var y = padding + ((v - min) / range) * (h - padding * 2);
+        ctx.lineTo(x, y);
+    });
+    ctx.lineTo(padding + (data.length - 1) * ((w - padding) / (data.length - 1)), h - padding);
+    ctx.closePath();
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    data.forEach(function(v, i) {
+        var x = padding + i * ((w - padding) / (data.length - 1));
+        var y = padding + ((v - min) / range) * (h - padding * 2);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = '#d4882b';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // End dot
+    var lastX = padding + (data.length - 1) * ((w - padding) / (data.length - 1));
+    var lastY = padding + ((data[data.length - 1] - min) / range) * (h - padding * 2);
+    ctx.beginPath();
+    ctx.arc(lastX, lastY, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#d4882b';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(lastX, lastY, 9, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(212, 136, 43, 0.3)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+}
+
+// =============================================
+// CONTENT TABS
+// =============================================
+function switchContentTab(btn, tab) {
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('contentTabBlog').style.display = tab === 'blog' ? '' : 'none';
+    document.getElementById('contentTabSocial').style.display = tab === 'social' ? '' : 'none';
+    document.getElementById('contentTabEmail').style.display = tab === 'email' ? '' : 'none';
+    document.getElementById('contentTabLanding').style.display = tab === 'landing' ? '' : 'none';
+}
+
+// =============================================
+// CONTENT MODAL
+// =============================================
+var articles = [
+    {
+        title: '10 tapaa parantaa B2B-myyntia digitaalisella markkinoinnilla',
+        body: '<h3>Johdanto</h3><p>Digitaalinen markkinointi on mullistanut tavan, jolla B2B-yritykset tavoittavat asiakkaitaan. Tassa artikkelissa kaymme lapi 10 konkreettista tapaa tehostaa myyntia digitaalisten kanavien avulla.</p><h3>1. Optimoi verkkosivustosi konversioita varten</h3><p>Verkkosivuston konversioaste on yksi tarkeimmista mittareista. Varmista, etta CTA-painikkeet ovat selkeita, lomakkeet yksinkertaisia ja sivuston latausnopeus hyva.</p><h3>2. Hyodynna sisaltomarkkinointia</h3><p>Laadukas sisalto rakentaa luottamusta ja asiantuntija-asemaa. Julkaise saannollisesti blogiartikkeleita, oppaita ja case studyja, jotka vastaavat kohderyaman kysymyksiin.</p><h3>3. Panosta hakukoneoptimointiin</h3><p>Orgaaninen nakyvyys on pitkalla aikavalilla kustannustehokkain tapa tuoda liikennetta sivustolle. Keskity pitkan hannan avainsanoihin ja laadukkaaseen sisaltoon.</p><p><em>... artikkeli jatkuu (2 340 sanaa) ...</em></p>'
+    },
+    {
+        title: 'Pilvipalveluiden tietoturva 2026 — Kattava opas',
+        body: '<h3>Johdanto</h3><p>Pilvipalveluiden tietoturva on noussut yhdeksi tarkeimmista keskusteluaiheista yritysmaailmassa. Vuonna 2026 uhkakuva on entista monimutkaisempi, mutta myos suojauksen keinot ovat kehittyneet merkittavasti.</p><h3>Tietoturvan peruspilarit</h3><p>Pilvipalveluiden tietoturva rakentuu kolmelle peruspilarille: salaus, paasynhallinta ja monitorointi. Jokaisen pilvipalvelua kayttavan yrityksen tulee varmistaa, etta nama kaikki osa-alueet ovat kunnossa.</p><p><em>... artikkeli jatkuu ...</em></p>'
+    },
+    {
+        title: 'SaaS-markkinoinnin ROI: Miten mittaat onnistumisen',
+        body: '<h3>Luonnos</h3><p>Tama artikkeli on viela luonnosvaiheessa. Sisaltoagentti tyostaa artikkelia, joka kasittelee SaaS-markkinoinnin ROI:n mittaamista eri kanavissa.</p><p><strong>Suunniteltu rakenne:</strong></p><ul><li>ROI-mittarit eri kanavissa</li><li>Attribution-mallit</li><li>Kaytannon laskentaesimerkit</li><li>Tyokalut ja automaatio</li></ul>'
+    },
+    {
+        title: 'AI-markkinoinnin trendit: Mita odottaa vuonna 2026',
+        body: '<h3>AI mullistaa markkinoinnin</h3><p>Tekoaly on siirtynyt kokeiluvaiheesta osaksi jokapaiaista markkinointityota. Vuonna 2026 AI-tyokalut ovat entista kehittyneempia ja helppokayttoisempia.</p><h3>Tarkeimmat trendit</h3><p>1. Autonomiset markkinointiagentit, 2. Hyperpersonointi, 3. Reaaliaikainen optimointi, 4. AI-generoitu sisalto.</p><p><em>... artikkeli jatkuu ...</em></p>'
+    },
+    {
+        title: 'B2B-markkinoinnin trendit 2026',
+        body: '<h3>Ajastettu julkaisu: 5.3.2026</h3><p>Tama artikkeli on ajastettu julkaistavaksi. Sisalto kasittelee B2B-markkinoinnin keskeisia trendeja vuodelle 2026.</p>'
+    },
+    {
+        title: 'Miksi PK-yritykset tarvitsevat markkinointiautomaatiota',
+        body: '<h3>Automaation voima</h3><p>PK-yrityksilla on usein rajalliset resurssit markkinointiin. Markkinointiautomaatio mahdollistaa suuremman vaikutuksen pienemmalla panostuksella.</p><p><em>... artikkeli jatkuu ...</em></p>'
+    },
+];
+
+function openContentModal(idx) {
+    var article = articles[idx];
+    document.getElementById('modalTitle').textContent = article.title;
+    document.getElementById('modalBody').innerHTML = article.body;
+    document.getElementById('contentModal').classList.add('open');
+}
+
+function closeModal(e) {
+    if (e.target.classList.contains('modal-overlay')) {
+        document.getElementById('contentModal').classList.remove('open');
+    }
+}
+function closeModalForce() {
+    document.getElementById('contentModal').classList.remove('open');
+}
+
+// =============================================
+// APPROVALS
+// =============================================
+function filterApprovals(btn, type) {
+    btn.parentElement.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    document.querySelectorAll('.approval-card').forEach(function(card) {
+        if (type === 'all') {
+            card.style.display = '';
+        } else if (type === 'high') {
+            card.style.display = card.dataset.priority === 'high' ? '' : 'none';
+        } else {
+            card.style.display = card.dataset.type === type ? '' : 'none';
+        }
+    });
+}
+
+function approveItem(id) {
+    var card = document.getElementById(id);
+    var title = card.querySelector('.approval-card-title').textContent;
+    card.classList.add('removing');
+    approvalCount--;
+    updateApprovalBadge();
+    showToast('Hyvaksytty: ' + title, 'success');
+    setTimeout(function() { card.remove(); }, 500);
+}
+
+function rejectItem(id) {
+    var card = document.getElementById(id);
+    var title = card.querySelector('.approval-card-title').textContent;
+    card.classList.add('removing');
+    approvalCount--;
+    updateApprovalBadge();
+    showToast('Hylatty: ' + title, 'error');
+    setTimeout(function() { card.remove(); }, 500);
+}
+
+function approveAll() {
+    document.querySelectorAll('.approval-card').forEach(function(card, i) {
+        setTimeout(function() {
+            card.classList.add('removing');
+            setTimeout(function() { card.remove(); }, 500);
+        }, i * 200);
+    });
+    approvalCount = 0;
+    setTimeout(function() { updateApprovalBadge(); }, 1200);
+    showToast('Kaikki 5 kohdetta hyvaksytty', 'success');
+}
+
+function updateApprovalBadge() {
+    var badge = document.getElementById('approvalBadge');
+    badge.textContent = approvalCount;
+    if (approvalCount <= 0) {
+        badge.style.display = 'none';
+        var sub = document.getElementById('approvalsSubtitle');
+        if (sub) sub.textContent = 'Kaikki hyvaksynnat kasitelty!';
+    }
+}
+
+// =============================================
+// COUNTDOWN TIMERS
+// =============================================
+function startCountdowns() {
+    setInterval(function() {
+        document.querySelectorAll('[data-countdown]').forEach(function(el) {
+            var secs = parseInt(el.dataset.countdown);
+            if (secs <= 0) return;
+            secs--;
+            el.dataset.countdown = secs;
+            var hrs = Math.floor(secs / 3600);
+            var mins = Math.floor((secs % 3600) / 60);
+            var s = secs % 60;
+            var text = el.querySelector('.countdown-text');
+            if (text) {
+                text.textContent = hrs + ':' + String(mins).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+                if (secs < 1800) {
+                    text.style.color = 'var(--red)';
+                } else if (secs < 3600) {
+                    text.style.color = 'var(--orange)';
+                }
+            }
+        });
+    }, 1000);
+}
+
+// =============================================
+// GLOBAL SEARCH
+// =============================================
+function handleSearch(query) {
+    query = query.toLowerCase().trim();
+    if (!query) {
+        // Show everything
+        document.querySelectorAll('[data-searchable]').forEach(function(el) {
+            el.classList.remove('search-hidden');
+        });
+        return;
+    }
+
+    document.querySelectorAll('[data-searchable]').forEach(function(el) {
+        var text = el.textContent.toLowerCase();
+        if (text.includes(query)) {
+            el.classList.remove('search-hidden');
+        } else {
+            el.classList.add('search-hidden');
+        }
+    });
+}
+
+// =============================================
+// REPORTS
+// =============================================
+function switchReportTab(btn, tab) {
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('reportTabWeekly').style.display = tab === 'weekly' ? '' : 'none';
+    document.getElementById('reportTabMonthly').style.display = tab === 'monthly' ? '' : 'none';
+}
+
+var reportData = {
+    weekly: [
+        { title: 'Viikkoraportti — Vko 9', content: '<h3>Yhteenveto</h3><p><strong>Orgaaninen liikenne:</strong> 6 120 vierailua (+12% vko/vko)</p><p><strong>Liidit:</strong> 8 uutta kvalifioitua liiidia</p><p><strong>ROAS:</strong> 4.2x (maksettu mainonta)</p><p><strong>SEO Health:</strong> 87/100 (+3 pistetta)</p><h3>Tarkeimmat tapahtumat</h3><p>\u2022 3 uutta blogiartikkelia julkaistu<br>\u2022 LinkedIn-postaus sai 12 400 nayttoa<br>\u2022 Core Web Vitals -optimointi: LCP 2.8s \u2192 1.9s<br>\u2022 12 uutta avainsanamahdollisuutta loydetty</p><h3>Ensi viikon prioriteetit</h3><p>\u2022 Avainsanaklusterin "pilvipalvelut" sisaltosuunnitelma<br>\u2022 Meta Ads -kampanjan kaynnistys<br>\u2022 Google Ads budjetin optimointi</p>' },
+        { title: 'Viikkoraportti — Vko 8', content: '<h3>Yhteenveto</h3><p><strong>Orgaaninen liikenne:</strong> 5 480 vierailua (+8%)</p><p><strong>Liidit:</strong> 6 uutta</p><p><strong>ROAS:</strong> 3.9x</p><p><strong>SEO Health:</strong> 84/100</p>' },
+        { title: 'Viikkoraportti — Vko 7', content: '<h3>Yhteenveto</h3><p><strong>Orgaaninen liikenne:</strong> 5 100 vierailua (+5%)</p><p><strong>Liidit:</strong> 4 uutta</p><p><strong>ROAS:</strong> 3.6x</p><p><strong>SEO Health:</strong> 82/100</p>' },
+    ],
+    monthly: [
+        { title: 'Kuukausiraportti — Helmikuu 2026', content: '<h3>Kuukauden yhteenveto</h3><p><strong>Kokonaisliikenne:</strong> 21 450 (+18% kk/kk)</p><p><strong>Orgaaninen liikenne:</strong> 14 200 (+22%)</p><p><strong>Liidit:</strong> 39 (+15%)</p><p><strong>ROAS:</strong> 3.8x</p><p><strong>SEO Health:</strong> 84/100 (+5)</p><h3>Saavutukset</h3><p>\u2022 8 blogiartikkelia julkaistu<br>\u2022 24 some-postausta<br>\u2022 2 email-kampanjaa<br>\u2022 45 avainsanaa Top 10 -positioissa</p><h3>Kustannukset</h3><p>\u2022 Palvelumaksu: 599 \u20AC<br>\u2022 Meta Ads: 2 100 \u20AC<br>\u2022 Google Ads: 1 500 \u20AC<br>\u2022 Yhteensa: 4 199 \u20AC</p>' },
+        { title: 'Kuukausiraportti — Tammikuu 2026', content: '<h3>Kuukauden yhteenveto</h3><p><strong>Kokonaisliikenne:</strong> 18 200</p><p><strong>Liidit:</strong> 34</p><p><strong>ROAS:</strong> 3.2x</p><p><strong>SEO Health:</strong> 79/100</p>' },
+    ]
+};
+
+function openReportModal(type, idx) {
+    var report = reportData[type][idx];
+    document.getElementById('reportModalTitle').textContent = report.title;
+    document.getElementById('reportModalBody').innerHTML = report.content;
+    document.getElementById('reportModal').classList.add('open');
+}
+
+function closeReportModal(e) {
+    if (e.target.classList.contains('modal-overlay')) {
+        document.getElementById('reportModal').classList.remove('open');
+    }
+}
+function closeReportModalForce() {
+    document.getElementById('reportModal').classList.remove('open');
+}
+
+// =============================================
+// SETTINGS TABS
+// =============================================
+function switchSettingsTab(btn, tab) {
+    btn.parentElement.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('settingsProfile').style.display = tab === 'profile' ? '' : 'none';
+    document.getElementById('settingsIntegrations').style.display = tab === 'integrations' ? '' : 'none';
+    document.getElementById('settingsTeam').style.display = tab === 'team' ? '' : 'none';
+    document.getElementById('settingsAgentSettings').style.display = tab === 'agentSettings' ? '' : 'none';
+    document.getElementById('settingsBilling').style.display = tab === 'billing' ? '' : 'none';
+}
+
+// =============================================
+// INIT
+// =============================================
+window.addEventListener('load', function() {
+    // Draw sparklines with amber color theme
+    drawSparkline('spark1', [18000,19200,20100,19800,21000,22300,21500,23000,22800,24521], '#d4882b');
+    drawSparkline('spark2', [28,31,29,33,35,38,37,40,42,47], '#5cb85c');
+    drawSparkline('spark3', [2.8,3.1,3.0,3.3,3.5,3.4,3.8,3.6,3.9,4.2], '#e8a84c');
+    drawSparkline('spark4', [72,74,76,78,79,80,82,84,85,87], '#5ba4b5');
+
+    // Count-up animation
+    animateCountUps();
+
+    // Start countdown timers
+    startCountdowns();
+});
+
+// Handle resize for sparklines
+window.addEventListener('resize', function() {
+    drawSparkline('spark1', [18000,19200,20100,19800,21000,22300,21500,23000,22800,24521], '#d4882b');
+    drawSparkline('spark2', [28,31,29,33,35,38,37,40,42,47], '#5cb85c');
+    drawSparkline('spark3', [2.8,3.1,3.0,3.3,3.5,3.4,3.8,3.6,3.9,4.2], '#e8a84c');
+    drawSparkline('spark4', [72,74,76,78,79,80,82,84,85,87], '#5ba4b5');
+});
+
+// Keyboard nav: Escape closes modals/notifications/confirm
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        document.getElementById('contentModal').classList.remove('open');
+        document.getElementById('reportModal').classList.remove('open');
+        document.getElementById('notifDropdown').classList.remove('open');
+        closeConfirmDialog();
+    }
+});
+</script>
+</body>
+</html>

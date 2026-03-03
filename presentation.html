@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Markkinointitiimi — PRD Esitys</title>
+
+    <!-- Fonts: Clash Display for headings, Satoshi for body -->
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&f[]=satoshi@300,400,500,700&display=swap">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES (THEME)
+           Indigo/purple dark theme for AI-Markkinointitiimi
+           =========================================== */
+        :root {
+            /* Colors */
+            --bg-primary: #0a0a1a;
+            --bg-secondary: #111132;
+            --bg-card: rgba(99, 102, 241, 0.08);
+            --bg-card-hover: rgba(99, 102, 241, 0.15);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --accent-glow: rgba(99, 102, 241, 0.4);
+            --accent-secondary: #a78bfa;
+            --green: #22c55e;
+            --orange: #f59e0b;
+            --red: #ef4444;
+            --cyan: #06b6d4;
+            --border: rgba(99, 102, 241, 0.2);
+
+            /* Typography */
+            --font-display: 'Clash Display', sans-serif;
+            --font-body: 'Satoshi', sans-serif;
+            --title-size: clamp(2rem, 6vw, 4.5rem);
+            --h2-size: clamp(1.5rem, 4vw, 3rem);
+            --h3-size: clamp(1rem, 2.5vw, 1.5rem);
+            --body-size: clamp(0.8rem, 1.4vw, 1.1rem);
+            --small-size: clamp(0.7rem, 1vw, 0.875rem);
+
+            /* Spacing */
+            --slide-padding: clamp(1.5rem, 5vw, 5rem);
+            --content-gap: clamp(0.75rem, 2vw, 2rem);
+            --element-gap: clamp(0.4rem, 1vw, 1rem);
+
+            /* Animation */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.7s;
+        }
+
+        /* ===========================================
+           BASE RESET & LAYOUT
+           =========================================== */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-snap-type: y mandatory;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            height: 100%;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===========================================
+           SLIDE CONTAINER
+           Each slide = exactly one viewport
+           =========================================== */
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            padding: var(--slide-padding);
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+        }
+
+        /* ===========================================
+           BACKGROUND EFFECTS
+           =========================================== */
+        .slide::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(167, 139, 250, 0.06) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .slide > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Grid background pattern */
+        .grid-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ===========================================
+           TYPOGRAPHY
+           =========================================== */
+        h1 {
+            font-family: var(--font-display);
+            font-size: var(--title-size);
+            font-weight: 600;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            font-size: var(--h2-size);
+            font-weight: 600;
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+            margin-bottom: var(--content-gap);
+        }
+
+        h3 {
+            font-family: var(--font-display);
+            font-size: var(--h3-size);
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        p, li {
+            font-size: var(--body-size);
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .label {
+            font-size: var(--small-size);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-light);
+            margin-bottom: var(--element-gap);
+        }
+
+        .tagline {
+            font-size: clamp(1rem, 2vw, 1.35rem);
+            color: var(--text-secondary);
+            max-width: 700px;
+            line-height: 1.5;
+        }
+
+        /* ===========================================
+           ENTRANCE ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.92);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .slide.visible .reveal-scale {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .reveal:nth-child(1) { transition-delay: 0.05s; }
+        .reveal:nth-child(2) { transition-delay: 0.15s; }
+        .reveal:nth-child(3) { transition-delay: 0.25s; }
+        .reveal:nth-child(4) { transition-delay: 0.35s; }
+        .reveal:nth-child(5) { transition-delay: 0.45s; }
+        .reveal:nth-child(6) { transition-delay: 0.55s; }
+
+        .stagger > *:nth-child(1) { transition-delay: 0.05s; }
+        .stagger > *:nth-child(2) { transition-delay: 0.12s; }
+        .stagger > *:nth-child(3) { transition-delay: 0.19s; }
+        .stagger > *:nth-child(4) { transition-delay: 0.26s; }
+        .stagger > *:nth-child(5) { transition-delay: 0.33s; }
+        .stagger > *:nth-child(6) { transition-delay: 0.4s; }
+
+        /* ===========================================
+           CARD SYSTEM
+           =========================================== */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: clamp(8px, 1.2vw, 16px);
+            padding: clamp(0.75rem, 2vw, 1.5rem);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .card-icon {
+            width: clamp(28px, 3vw, 42px);
+            height: clamp(28px, 3vw, 42px);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(14px, 1.5vw, 20px);
+            margin-bottom: var(--element-gap);
+        }
+
+        /* ===========================================
+           GRIDS
+           =========================================== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: clamp(0.5rem, 1.5vw, 1.25rem);
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: clamp(0.5rem, 1.5vw, 1.25rem);
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: clamp(0.5rem, 1.5vw, 1rem);
+        }
+
+        @media (max-width: 768px) {
+            .grid-3 { grid-template-columns: repeat(2, 1fr); }
+            .grid-4 { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 480px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        /* ===========================================
+           COMPARISON TABLE (Slide 2 - Problem)
+           =========================================== */
+        .pain-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: clamp(8px, 1.2vw, 16px);
+            padding: clamp(1rem, 2.5vw, 2rem);
+            display: flex;
+            flex-direction: column;
+            gap: var(--element-gap);
+        }
+
+        .pain-number {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: 700;
+            color: var(--accent);
+            opacity: 0.3;
+            line-height: 1;
+        }
+
+        .pain-title {
+            font-family: var(--font-display);
+            font-size: clamp(1rem, 1.8vw, 1.3rem);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .pain-desc {
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ===========================================
+           AGENT CARDS (Slide 5)
+           =========================================== */
+        .agent-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: clamp(8px, 1.2vw, 14px);
+            padding: clamp(0.6rem, 1.5vw, 1.2rem);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.3rem, 0.6vw, 0.5rem);
+        }
+
+        .agent-header {
+            display: flex;
+            align-items: center;
+            gap: clamp(0.4rem, 0.8vw, 0.7rem);
+        }
+
+        .agent-icon {
+            width: clamp(26px, 2.5vw, 36px);
+            height: clamp(26px, 2.5vw, 36px);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(13px, 1.3vw, 17px);
+            flex-shrink: 0;
+        }
+
+        .agent-name {
+            font-family: var(--font-display);
+            font-size: clamp(0.75rem, 1.2vw, 1rem);
+            font-weight: 500;
+        }
+
+        .agent-tasks {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.15rem, 0.3vw, 0.25rem);
+        }
+
+        .agent-tasks li {
+            font-size: clamp(0.6rem, 0.9vw, 0.8rem);
+            color: var(--text-muted);
+            padding-left: 1em;
+            position: relative;
+        }
+
+        .agent-tasks li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-light);
+        }
+
+        /* ===========================================
+           FLOW DIAGRAM (Slide 4 - How it works)
+           =========================================== */
+        .flow-steps {
+            display: flex;
+            align-items: center;
+            gap: clamp(0.3rem, 1vw, 1rem);
+            flex-wrap: nowrap;
+        }
+
+        .flow-step {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: clamp(8px, 1vw, 14px);
+            padding: clamp(0.75rem, 1.5vw, 1.5rem);
+            text-align: center;
+            min-width: 0;
+        }
+
+        .flow-step-number {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            font-weight: 700;
+            color: var(--accent);
+            opacity: 0.5;
+            line-height: 1;
+        }
+
+        .flow-step-title {
+            font-family: var(--font-display);
+            font-size: clamp(0.75rem, 1.3vw, 1.1rem);
+            font-weight: 500;
+            margin-top: clamp(0.3rem, 0.5vw, 0.5rem);
+        }
+
+        .flow-step-desc {
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            margin-top: clamp(0.2rem, 0.4vw, 0.4rem);
+            line-height: 1.4;
+        }
+
+        .flow-arrow {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 768px) {
+            .flow-steps {
+                flex-direction: column;
+            }
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        /* ===========================================
+           PRICING TABLE (Slide 8)
+           =========================================== */
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: clamp(8px, 1.2vw, 16px);
+            padding: clamp(0.75rem, 2vw, 1.5rem);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.3rem, 0.7vw, 0.6rem);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--accent);
+            background: rgba(99, 102, 241, 0.12);
+            transform: scale(1.03);
+        }
+
+        .pricing-tier {
+            font-family: var(--font-display);
+            font-size: clamp(0.8rem, 1.3vw, 1.1rem);
+            font-weight: 500;
+            color: var(--accent-light);
+        }
+
+        .pricing-price {
+            font-family: var(--font-display);
+            font-size: clamp(1.5rem, 3.5vw, 2.8rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.1;
+        }
+
+        .pricing-price span {
+            font-size: clamp(0.7rem, 1vw, 0.9rem);
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .pricing-features {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.15rem, 0.4vw, 0.3rem);
+            text-align: left;
+        }
+
+        .pricing-features li {
+            font-size: clamp(0.65rem, 0.95vw, 0.85rem);
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.4em;
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            color: var(--green);
+            font-weight: 700;
+            font-size: 0.8em;
+        }
+
+        /* ===========================================
+           ROADMAP (Slide 9)
+           =========================================== */
+        .roadmap {
+            display: flex;
+            gap: clamp(0.5rem, 1.5vw, 1.5rem);
+        }
+
+        .roadmap-phase {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: clamp(8px, 1.2vw, 14px);
+            padding: clamp(0.75rem, 1.5vw, 1.5rem);
+            position: relative;
+        }
+
+        .roadmap-phase::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            border-radius: 14px 14px 0 0;
+        }
+
+        .roadmap-phase:nth-child(1)::before { background: var(--accent); }
+        .roadmap-phase:nth-child(2)::before { background: var(--accent-secondary); }
+        .roadmap-phase:nth-child(3)::before { background: var(--cyan); }
+
+        .roadmap-label {
+            font-family: var(--font-display);
+            font-size: clamp(0.7rem, 1vw, 0.9rem);
+            font-weight: 500;
+            color: var(--accent-light);
+            margin-bottom: clamp(0.2rem, 0.4vw, 0.3rem);
+        }
+
+        .roadmap-title {
+            font-family: var(--font-display);
+            font-size: clamp(1rem, 1.8vw, 1.4rem);
+            font-weight: 600;
+            margin-bottom: clamp(0.3rem, 0.6vw, 0.5rem);
+        }
+
+        .roadmap-items {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.15rem, 0.3vw, 0.25rem);
+        }
+
+        .roadmap-items li {
+            font-size: clamp(0.6rem, 0.9vw, 0.8rem);
+            color: var(--text-muted);
+            padding-left: 1.2em;
+            position: relative;
+        }
+
+        .roadmap-items li::before {
+            content: '○';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-size: 0.7em;
+        }
+
+        @media (max-width: 768px) {
+            .roadmap { flex-direction: column; }
+        }
+
+        /* ===========================================
+           AUTONOMY LEVELS TABLE (Slide 7)
+           =========================================== */
+        .autonomy-levels {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.4rem, 0.8vw, 0.7rem);
+        }
+
+        .autonomy-row {
+            display: flex;
+            align-items: center;
+            gap: clamp(0.5rem, 1vw, 1rem);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: clamp(6px, 0.8vw, 10px);
+            padding: clamp(0.5rem, 1vw, 0.8rem) clamp(0.75rem, 1.5vw, 1.2rem);
+        }
+
+        .autonomy-dot {
+            width: clamp(8px, 1vw, 12px);
+            height: clamp(8px, 1vw, 12px);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .autonomy-level-name {
+            font-family: var(--font-display);
+            font-size: clamp(0.75rem, 1.1vw, 0.95rem);
+            font-weight: 500;
+            min-width: clamp(100px, 15vw, 180px);
+        }
+
+        .autonomy-desc {
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            flex: 1;
+        }
+
+        .autonomy-example {
+            font-size: clamp(0.6rem, 0.85vw, 0.75rem);
+            color: var(--text-muted);
+            font-style: italic;
+            opacity: 0.7;
+            min-width: clamp(80px, 15vw, 200px);
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            .autonomy-row { flex-wrap: wrap; }
+            .autonomy-example { text-align: left; min-width: 100%; }
+        }
+
+        /* ===========================================
+           MOCKUP IMAGE
+           =========================================== */
+        .mockup-container {
+            max-width: min(90vw, 1000px);
+            max-height: min(55vh, 500px);
+            margin: 0 auto;
+            border-radius: clamp(8px, 1vw, 14px);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 40px var(--accent-glow);
+        }
+
+        .mockup-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* ===========================================
+           COMPETITIVE ADVANTAGE (Slide 10)
+           =========================================== */
+        .advantage-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: clamp(0.75rem, 2vw, 2rem);
+            align-items: center;
+        }
+
+        .advantage-col {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(0.4rem, 0.8vw, 0.7rem);
+        }
+
+        .advantage-item {
+            font-size: var(--body-size);
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+
+        .advantage-divider {
+            width: 2px;
+            height: clamp(150px, 30vh, 300px);
+            background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+        }
+
+        .vs-badge {
+            font-family: var(--font-display);
+            font-size: clamp(0.7rem, 1vw, 0.9rem);
+            font-weight: 600;
+            color: var(--accent);
+            background: var(--bg-card);
+            border: 1px solid var(--accent);
+            border-radius: 50%;
+            width: clamp(36px, 4vw, 50px);
+            height: clamp(36px, 4vw, 50px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @media (max-width: 768px) {
+            .advantage-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .advantage-divider {
+                width: 80%;
+                height: 2px;
+                margin: 0 auto;
+                background: linear-gradient(to right, transparent, var(--accent), transparent);
+            }
+        }
+
+        /* ===========================================
+           PROGRESS BAR
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            z-index: 100;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* ===========================================
+           NAVIGATION DOTS
+           =========================================== */
+        .nav-dots {
+            position: fixed;
+            right: clamp(0.5rem, 1.5vw, 1.5rem);
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(6px, 0.8vw, 10px);
+            z-index: 50;
+        }
+
+        .nav-dot {
+            width: clamp(6px, 0.6vw, 8px);
+            height: clamp(6px, 0.6vw, 8px);
+            border-radius: 50%;
+            background: var(--text-muted);
+            opacity: 0.3;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            padding: 0;
+        }
+
+        .nav-dot.active {
+            opacity: 1;
+            background: var(--accent);
+            transform: scale(1.5);
+            box-shadow: 0 0 8px var(--accent-glow);
+        }
+
+        .nav-dot:hover {
+            opacity: 0.7;
+        }
+
+        /* ===========================================
+           SLIDE COUNTER
+           =========================================== */
+        .slide-counter {
+            position: fixed;
+            bottom: clamp(0.75rem, 1.5vw, 1.5rem);
+            right: clamp(0.75rem, 1.5vw, 1.5rem);
+            font-family: var(--font-display);
+            font-size: var(--small-size);
+            color: var(--text-muted);
+            z-index: 50;
+        }
+
+        .slide-counter .current {
+            color: var(--accent-light);
+            font-weight: 600;
+        }
+
+        /* ===========================================
+           TITLE SLIDE SPECIAL EFFECTS
+           =========================================== */
+        .title-slide .accent-text {
+            background: linear-gradient(135deg, var(--accent-light), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glow-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .glow-orb-1 {
+            width: clamp(200px, 30vw, 500px);
+            height: clamp(200px, 30vw, 500px);
+            background: rgba(99, 102, 241, 0.15);
+            top: 10%;
+            right: 10%;
+            animation: float-orb 8s ease-in-out infinite;
+        }
+
+        .glow-orb-2 {
+            width: clamp(150px, 25vw, 400px);
+            height: clamp(150px, 25vw, 400px);
+            background: rgba(167, 139, 250, 0.1);
+            bottom: 20%;
+            left: 5%;
+            animation: float-orb 10s ease-in-out infinite reverse;
+        }
+
+        @keyframes float-orb {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(20px, -20px); }
+        }
+
+        /* ===========================================
+           RESPONSIVE BREAKPOINTS
+           =========================================== */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(1rem, 3vw, 2.5rem);
+                --content-gap: clamp(0.5rem, 1.5vw, 1rem);
+                --title-size: clamp(1.5rem, 5vw, 3rem);
+                --h2-size: clamp(1.2rem, 3vw, 2rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            :root {
+                --slide-padding: clamp(0.75rem, 2.5vw, 1.5rem);
+                --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+                --title-size: clamp(1.2rem, 4vw, 2rem);
+                --body-size: clamp(0.65rem, 1.1vw, 0.9rem);
+            }
+            .nav-dots, .slide-counter { display: none; }
+        }
+
+        @media (max-height: 500px) {
+            :root {
+                --slide-padding: clamp(0.5rem, 2vw, 1rem);
+                --title-size: clamp(1rem, 3.5vw, 1.5rem);
+                --h2-size: clamp(0.9rem, 2.5vw, 1.25rem);
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --title-size: clamp(1.5rem, 8vw, 3rem);
+            }
+        }
+
+        /* ===========================================
+           REDUCED MOTION
+           =========================================== */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+            html { scroll-behavior: auto; }
+            .glow-orb { animation: none !important; }
+        }
+
+        /* ===========================================
+           UTILITY CLASSES
+           =========================================== */
+        .text-center { text-align: center; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .max-w-800 { max-width: min(90vw, 800px); }
+        .max-w-1000 { max-width: min(90vw, 1000px); }
+        .gap-sm { gap: var(--element-gap); }
+        .gap-md { gap: var(--content-gap); }
+        .mt-auto { margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Navigation Dots -->
+    <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+    <!-- Slide Counter -->
+    <div class="slide-counter">
+        <span class="current" id="currentSlide">01</span> / <span id="totalSlides">10</span>
+    </div>
+
+    <!-- ============================
+         SLIDE 1: TITLE
+         ============================ -->
+    <section class="slide title-slide grid-bg" data-slide="1">
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <p class="label reveal">Aava & Bang AI</p>
+            <h1 class="reveal" style="margin-bottom: var(--content-gap);">
+                <span class="accent-text">AI-Markkinointitiimi</span>
+            </h1>
+            <p class="tagline reveal" style="max-width: 700px;">
+                Kokonainen markkinointitiimi — murto-osalla hinnasta, moninkertaisella nopeudella.
+            </p>
+            <p class="reveal" style="margin-top: var(--content-gap); font-size: var(--small-size); color: var(--text-muted);">
+                6 autonomista AI-agenttia &middot; 24/7 toiminta &middot; 299 €/kk alkaen
+            </p>
+            <a href="demo.html" class="reveal" style="display: inline-flex; align-items: center; gap: 8px; margin-top: var(--content-gap); padding: 14px 32px; background: linear-gradient(135deg, var(--accent), var(--accent-secondary)); color: white; border-radius: 12px; font-family: var(--font-display); font-weight: 600; font-size: clamp(0.9rem, 1.5vw, 1.1rem); text-decoration: none; transition: all 0.3s ease; box-shadow: 0 4px 24px rgba(99, 102, 241, 0.4);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 32px rgba(99, 102, 241, 0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(99, 102, 241, 0.4)'">Kokeile demoa →</a>
+        </div>
+    </section>
+
+    <!-- ============================
+         SLIDE 2: PROBLEM
+         ============================ -->
+    <section class="slide grid-bg" data-slide="2">
+        <div class="slide-content">
+            <p class="label reveal">Ongelma</p>
+            <h2 class="reveal">PK-yritysten markkinoinnin kolme kipupistettä</h2>
+            <div class="grid-3 stagger" style="margin-top: var(--content-gap);">
+                <div class="pain-card reveal">
+                    <div class="pain-number">01</div>
+                    <div class="pain-title">Osaajapula</div>
+                    <div class="pain-desc">Osaavia digitekijöitä on vaikea löytää. Yhden asiantuntijan vuosikustannus on 45 000–65 000 € — eikä yksi henkilö hallitse kaikkia osa-alueita.</div>
+                </div>
+                <div class="pain-card reveal">
+                    <div class="pain-number">02</div>
+                    <div class="pain-title">Optimoinnin puute</div>
+                    <div class="pain-desc">Markkinointi vaatii jatkuvaa testausta ja optimointia. Toimistomallit perustuvat kuukausipalavereihin — reagointi muutoksiin on hidasta.</div>
+                </div>
+                <div class="pain-card reveal">
+                    <div class="pain-number">03</div>
+                    <div class="pain-title">Musta laatikko</div>
+                    <div class="pain-desc">Asiakkaat eivät näe mitä toimisto tekee. Kuukausiraportit ovat ympäripyöreitä ja konkreettiset toimenpiteet jäävät epäselviksi.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================
+         SLIDE 3: SOLUTION
+         ============================ -->
+    <section class="slide grid-bg" data-slide="3">
+        <div class="slide-content">
+            <p class="label reveal">Ratkaisu</p>
+            <h2 class="reveal">6 erikoistunutta AI-agenttia, jotka työskentelevät 24/7</h2>
+            <div class="grid-3 stagger" style="margin-top: var(--content-gap);">
+                <div class="card reveal" style="text-align: center;">
+                    <div class="card-icon mx-auto" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">🔍</div>
+                    <h3>Orgaaninen SEO</h3>
+                    <p style="font-size: var(--small-size);">Avainsanatutkimus, sisältöbriefit, kilpailija-analyysi</p>
+                </div>
+                <div class="card reveal" style="text-align: center;">
+                    <div class="card-icon mx-auto" style="background: rgba(6, 182, 212, 0.2); color: #22d3ee;">⚙️</div>
+                    <h3>Tekninen SEO</h3>
+                    <p style="font-size: var(--small-size);">Crawlaus, Core Web Vitals, indeksointiongelmat</p>
+                </div>
+                <div class="card reveal" style="text-align: center;">
+                    <div class="card-icon mx-auto" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa;">📣</div>
+                    <h3>Meta Ads</h3>
+                    <p style="font-size: var(--small-size);">Kampanjat, yleisöt, A/B-testaus, budjettioptimointi</p>
+                </div>
+                <div class="card reveal" style="text-align: center;">
+                    <div class="card-icon mx-auto" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">🎯</div>
+                    <h3>SEM (Google Ads)</h3>
+                    <p style="font-size: var(--small-size);">Avainsanat, hintatarjoukset, Quality Score, RSA-mainokset</p>
+                </div>
+                <div class="card reveal" style="text-align: center;">
+                    <div class="card-icon mx-auto" style="background: rgba(167, 139, 250, 0.2); color: #c4b5fd;">✍️</div>
+                    <h3>Sisältö</h3>
+                    <p style="font-size: var(--small-size);">Blogiartikkelit, some-postaukset, sähköpostit, landing paget</p>
+                </div>
+                <div class="card reveal" style="text-align: center;">
+                    <div class="card-icon mx-auto" style="background: rgba(34, 197, 94, 0.2); color: #4ade80;">📊</div>
+                    <h3>Analytiikka</h3>
+                    <p style="font-size: var(--small-size);">Reaaliaikainen seuranta, raportit, ennusteet, hälytykset</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================
+         SLIDE 4: HOW IT WORKS
+         ============================ -->
+    <section class="slide grid-bg" data-slide="4">
+        <div class="slide-content">
+            <p class="label reveal">Miten se toimii</p>
+            <h2 class="reveal">Onboardingista tuloksiin — 30 minuutissa</h2>
+            <div class="flow-steps stagger" style="margin-top: var(--content-gap);">
+                <div class="flow-step reveal">
+                    <div class="flow-step-number">1</div>
+                    <div class="flow-step-title">Onboarding</div>
+                    <div class="flow-step-desc">Yritysprofiili, brändi, kohderyhmät, tavoitteet</div>
+                </div>
+                <div class="flow-arrow reveal">→</div>
+                <div class="flow-step reveal">
+                    <div class="flow-step-number">2</div>
+                    <div class="flow-step-title">Integraatiot</div>
+                    <div class="flow-step-desc">GA4, Search Console, Google Ads, Meta Ads</div>
+                </div>
+                <div class="flow-arrow reveal">→</div>
+                <div class="flow-step reveal">
+                    <div class="flow-step-number">3</div>
+                    <div class="flow-step-title">Analyysi</div>
+                    <div class="flow-step-desc">Agentit analysoivat datasi ja kilpailijat</div>
+                </div>
+                <div class="flow-arrow reveal">→</div>
+                <div class="flow-step reveal">
+                    <div class="flow-step-number">4</div>
+                    <div class="flow-step-title">Toiminta</div>
+                    <div class="flow-step-desc">Autonominen toteutus + sinun hyväksyntäsi</div>
+                </div>
+            </div>
+            <p class="reveal text-center" style="margin-top: var(--content-gap); color: var(--text-muted); font-size: var(--small-size);">
+                Asiakas säilyttää aina kontrollin — kriittiset päätökset vaativat hyväksynnän
+            </p>
+        </div>
+    </section>
+
+    <!-- ============================
+         SLIDE 5: THE 6 AGENTS (detail)
+         ============================ -->
+    <section class="slide grid-bg" data-slide="5">
+        <div class="slide-content">
+            <p class="label reveal">Agentit</p>
+            <h2 class="reveal">6 erikoistunutta AI-agenttia</h2>
+            <div class="grid-3 stagger" style="margin-top: var(--content-gap);">
+                <div class="agent-card reveal">
+                    <div class="agent-header">
+                        <div class="agent-icon" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">🔍</div>
+                        <div class="agent-name">Orgaaninen SEO</div>
+                    </div>
+                    <ul class="agent-tasks">
+                        <li>Avainsanatutkimus & klusterointi</li>
+                        <li>Sisältöbriefien luominen</li>
+                        <li>Kilpailija-analyysi</li>
+                        <li>Positioiden seuranta</li>
+                    </ul>
+                </div>
+                <div class="agent-card reveal">
+                    <div class="agent-header">
+                        <div class="agent-icon" style="background: rgba(6, 182, 212, 0.2); color: #22d3ee;">⚙️</div>
+                        <div class="agent-name">Tekninen SEO</div>
+                    </div>
+                    <ul class="agent-tasks">
+                        <li>Sivuston crawlaus & auditointi</li>
+                        <li>Core Web Vitals -seuranta</li>
+                        <li>Rakenteellinen data (Schema)</li>
+                        <li>Indeksointiongelmat</li>
+                    </ul>
+                </div>
+                <div class="agent-card reveal">
+                    <div class="agent-header">
+                        <div class="agent-icon" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa;">📣</div>
+                        <div class="agent-name">Meta Ads</div>
+                    </div>
+                    <ul class="agent-tasks">
+                        <li>Kampanjarakenne & yleisöt</li>
+                        <li>Mainostekstien generointi</li>
+                        <li>A/B-testaus & optimointi</li>
+                        <li>Budjetin allokointi</li>
+                    </ul>
+                </div>
+                <div class="agent-card reveal">
+                    <div class="agent-header">
+                        <div class="agent-icon" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">🎯</div>
+                        <div class="agent-name">SEM (Google Ads)</div>
+                    </div>
+                    <ul class="agent-tasks">
+                        <li>Avainsanastrategia & negatiiviset</li>
+                        <li>RSA-mainostekstit</li>
+                        <li>Quality Score -optimointi</li>
+                        <li>Bid strategy -hallinta</li>
+                    </ul>
+                </div>
+                <div class="agent-card reveal">
+                    <div class="agent-header">
+                        <div class="agent-icon" style="background: rgba(167, 139, 250, 0.2); color: #c4b5fd;">✍️</div>
+                        <div class="agent-name">Sisältö</div>
+                    </div>
+                    <ul class="agent-tasks">
+                        <li>SEO-blogit (2–4/vko)</li>
+                        <li>Sosiaalisen median postaukset</li>
+                        <li>Sähköpostikampanjat</li>
+                        <li>Landing page -kopiot</li>
+                    </ul>
+                </div>
+                <div class="agent-card reveal">
+                    <div class="agent-header">
+                        <div class="agent-icon" style="background: rgba(34, 197, 94, 0.2); color: #4ade80;">📊</div>
+                        <div class="agent-name">Analytiikka</div>
+                    </div>
+                    <ul class="agent-tasks">
+                        <li>Reaaliaikainen dashboard</li>
+                        <li>Automaattiset raportit</li>
+                        <li>Anomalioiden havaitseminen</li>
+                        <li>Ennustemallinnus</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================
+         SLIDE 6: DASHBOARD
+         ============================ -->
+    <section class="slide grid-bg" data-slide="6">
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <p class="label reveal">Käyttöliittymä</p>
+            <h2 class="reveal">Kaikki yhdessä dashboardissa</h2>
+            <div class="mockup-container reveal-scale" style="margin-top: var(--content-gap);">
+                <img src="assets/dashboard-main.png" alt="AI-Markkinointitiimi Dashboard" loading="lazy">
+            </div>
+            <p class="reveal" style="margin-top: var(--content-gap); font-size: var(--small-size); color: var(--text-muted); max-width: 600px; margin-left: auto; margin-right: auto;">
+                Reaaliaikainen näkymä kaikkien agenttien tilasta, suorituskykymittareista ja hyväksyntäjonosta
+            </p>
+        </div>
+    </section>
+
+    <!-- ============================
+         SLIDE 7: APPROVAL WORKFLOW
+         ============================ -->
+    <section class="slide grid-bg" data-slide="7">
+        <div class="slide-content">
+            <p class="label reveal">Autonomisuus & kontrolli</p>
+            <h2 class="reveal">Sinä päätät, kuinka paljon vapautta agentit saavat</h2>
+            <div class="autonomy-levels stagger" style="margin-top: var(--content-gap);">
+                <div class="autonomy-row reveal">
+                    <div class="autonomy-dot" style="background: var(--green);"></div>
+                    <div class="autonomy-level-name">Täysin autonominen</div>
+                    <div class="autonomy-desc">Agentti toimii itsenäisesti ilman ihmisen puuttumista</div>
+                    <div class="autonomy-example">Raportointi, seuranta</div>
+                </div>
+                <div class="autonomy-row reveal">
+                    <div class="autonomy-dot" style="background: var(--cyan);"></div>
+                    <div class="autonomy-level-name">Ilmoitus jälkikäteen</div>
+                    <div class="autonomy-desc">Agentti tekee ja ilmoittaa mitä teki</div>
+                    <div class="autonomy-example">A/B-testit, pienet optimoinnit</div>
+                </div>
+                <div class="autonomy-row reveal">
+                    <div class="autonomy-dot" style="background: var(--orange);"></div>
+                    <div class="autonomy-level-name">Hyväksyntä etukäteen</div>
+                    <div class="autonomy-desc">Agentti ehdottaa ja odottaa sinun hyväksyntääsi</div>
+                    <div class="autonomy-example">Sisällön julkaisu, kampanjat</div>
+                </div>
+                <div class="autonomy-row reveal">
+                    <div class="autonomy-dot" style="background: var(--accent-secondary);"></div>
+                    <div class="autonomy-level-name">Yhteistyö</div>
+                    <div class="autonomy-desc">Työskentelet yhdessä agentin kanssa</div>
+                    <div class="autonomy-example">Strategiamuutokset</div>
+                </div>
+            </div>
+            <p class="reveal" style="margin-top: var(--content-gap); font-size: var(--small-size); color: var(--text-muted); text-align: center;">
+                Hätäpysäytys milloin tahansa — pysäytä yksittäinen agentti tai kaikki kerralla
+            </p>
+        </div>
+    </section>
+
+    <!-- ============================
+         SLIDE 8: PRICING
+         ============================ -->
+    <section class="slide grid-bg" data-slide="8">
+        <div class="slide-content" style="align-items: center;">
+            <p class="label reveal">Hinnoittelu</p>
+            <h2 class="reveal text-center">Yksinkertainen, läpinäkyvä hinnoittelu</h2>
+            <div class="grid-4 stagger max-w-1000 mx-auto" style="margin-top: var(--content-gap);">
+                <div class="pricing-card reveal">
+                    <div class="pricing-tier">Starter</div>
+                    <div class="pricing-price">299€ <span>/kk</span></div>
+                    <ul class="pricing-features">
+                        <li>SEO + Sisältöagentti</li>
+                        <li>4 artikkelia/kk</li>
+                        <li>Perusdashboard</li>
+                        <li>Viikkoraportit</li>
+                    </ul>
+                </div>
+                <div class="pricing-card featured reveal">
+                    <div class="pricing-tier">Growth</div>
+                    <div class="pricing-price">599€ <span>/kk</span></div>
+                    <ul class="pricing-features">
+                        <li>Kaikki 6 agenttia</li>
+                        <li>8 artikkelia/kk</li>
+                        <li>Mainosbudjetti &lt; 5 000€</li>
+                        <li>Kuukausiraportit</li>
+                    </ul>
+                </div>
+                <div class="pricing-card reveal">
+                    <div class="pricing-tier">Scale</div>
+                    <div class="pricing-price">999€ <span>/kk</span></div>
+                    <ul class="pricing-features">
+                        <li>Kaikki 6 agenttia</li>
+                        <li>16 artikkelia/kk</li>
+                        <li>Mainosbudjetti &lt; 20 000€</li>
+                        <li>Tiimikäyttö</li>
+                    </ul>
+                </div>
+                <div class="pricing-card reveal">
+                    <div class="pricing-tier">Enterprise</div>
+                    <div class="pricing-price" style="font-size: clamp(1.2rem, 2.5vw, 2rem);">Räätälöity</div>
+                    <ul class="pricing-features">
+                        <li>Kaikki + mukautetut agentit</li>
+                        <li>Rajaton sisältö</li>
+                        <li>SSO & API-pääsy</li>
+                        <li>Dedikoidut resurssit</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="reveal text-center" style="margin-top: var(--content-gap); color: var(--text-muted); font-size: var(--small-size);">
+                Perinteinen toimisto: 3 000–15 000 €/kk &middot; AI-Markkinointitiimi: 299–999 €/kk
+            </p>
+        </div>
+    </section>
+
+    <!-- ============================
+         SLIDE 9: ROADMAP
+         ============================ -->
+    <section class="slide grid-bg" data-slide="9">
+        <div class="slide-content">
+            <p class="label reveal">Kehityksen vaiheistus</p>
+            <h2 class="reveal">MVP:stä markkinajohtajaksi</h2>
+            <div class="roadmap stagger" style="margin-top: var(--content-gap);">
+                <div class="roadmap-phase reveal">
+                    <div class="roadmap-label">Kuukaudet 1–3</div>
+                    <div class="roadmap-title">MVP</div>
+                    <ul class="roadmap-items">
+                        <li>Rekisteröityminen & onboarding</li>
+                        <li>2 agenttia (SEO + Sisältö)</li>
+                        <li>Perusdashboard</li>
+                        <li>Hyväksyntäjono</li>
+                        <li>GA4 + GSC integraatiot</li>
+                        <li>10 beta-asiakasta</li>
+                    </ul>
+                </div>
+                <div class="roadmap-phase reveal">
+                    <div class="roadmap-label">Kuukaudet 4–6</div>
+                    <div class="roadmap-title">V1</div>
+                    <ul class="roadmap-items">
+                        <li>Kaikki 6 agenttia</li>
+                        <li>Meta Ads + Google Ads</li>
+                        <li>WordPress-integraatio</li>
+                        <li>Tiimikäyttö</li>
+                        <li>Slack-notifikaatiot</li>
+                        <li>50 maksavaa asiakasta</li>
+                    </ul>
+                </div>
+                <div class="roadmap-phase reveal">
+                    <div class="roadmap-label">Kuukaudet 7–12</div>
+                    <div class="roadmap-title">V2</div>
+                    <ul class="roadmap-items">
+                        <li>Enterprise (SSO, API)</li>
+                        <li>CRM-integraatiot</li>
+                        <li>Ennustemallinnus</li>
+                        <li>White-label toimistoille</li>
+                        <li>Monikielisyys (5 kieltä)</li>
+                        <li>200 asiakasta, 150k€ MRR</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================
+         SLIDE 10: COMPETITIVE ADVANTAGE
+         ============================ -->
+    <section class="slide grid-bg" data-slide="10">
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+        <div class="slide-content" style="align-items: center; text-align: center;">
+            <p class="label reveal">Kilpailuetu</p>
+            <h2 class="reveal">Ainoa kokonainen AI-markkinointitiimi</h2>
+            <div class="grid-3 stagger max-w-1000 mx-auto" style="margin-top: var(--content-gap);">
+                <div class="card reveal" style="border-color: rgba(239, 68, 68, 0.3);">
+                    <h3 style="color: var(--red); margin-bottom: var(--element-gap);">Yksittäiset AI-työkalut</h3>
+                    <p style="font-size: var(--small-size);">Jasper, MarketMuse, SE Ranking — kukin tekee yhden asian. Ei kokonaisratkaisua.</p>
+                </div>
+                <div class="card reveal" style="border-color: var(--accent); background: rgba(99, 102, 241, 0.12); transform: scale(1.03);">
+                    <h3 style="color: var(--accent-light); margin-bottom: var(--element-gap);">AI-Markkinointitiimi</h3>
+                    <p style="font-size: var(--small-size);">6 erikoistunutta agenttia. Koko arvoketju yhdessä palvelussa. Autonominen + kontrolloitu.</p>
+                </div>
+                <div class="card reveal" style="border-color: rgba(245, 158, 11, 0.3);">
+                    <h3 style="color: var(--orange); margin-bottom: var(--element-gap);">Perinteinen toimisto</h3>
+                    <p style="font-size: var(--small-size);">Kallis (3–15k€/kk), hidas, ei läpinäkyvä. Rajoitettu kapasiteetti.</p>
+                </div>
+            </div>
+            <div class="reveal" style="margin-top: clamp(1.5rem, 3vw, 3rem);">
+                <h3 style="color: var(--accent-light); margin-bottom: var(--element-gap);">
+                    SEO + SEM + Sisältö + Some + Analytiikka = Yksi palvelu
+                </h3>
+                <p style="font-size: var(--body-size); color: var(--text-muted);">
+                    Rakennetaan Aava & Bang AI:n toimesta. 2026.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===========================================
+         JAVASCRIPT: Presentation Controller
+         =========================================== -->
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           Handles navigation, animations, progress
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = document.querySelectorAll('.slide');
+                this.totalSlides = this.slides.length;
+                this.currentIndex = 0;
+
+                this.initNavDots();
+                this.initObserver();
+                this.initKeyboard();
+                this.initTouch();
+                this.updateProgress();
+                this.updateCounter();
+            }
+
+            /* Create navigation dots on the right side */
+            initNavDots() {
+                const nav = document.getElementById('navDots');
+                this.slides.forEach((_, i) => {
+                    const dot = document.createElement('button');
+                    dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+                    dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+                    dot.addEventListener('click', () => {
+                        this.slides[i].scrollIntoView({ behavior: 'smooth' });
+                    });
+                    nav.appendChild(dot);
+                });
+                this.dots = nav.querySelectorAll('.nav-dot');
+            }
+
+            /* Intersection Observer for scroll-triggered animations */
+            initObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+
+                            /* Update current slide index */
+                            const index = Array.from(this.slides).indexOf(entry.target);
+                            if (index !== -1) {
+                                this.currentIndex = index;
+                                this.updateDots();
+                                this.updateProgress();
+                                this.updateCounter();
+                            }
+                        }
+                    });
+                }, {
+                    threshold: 0.5
+                });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            /* Keyboard navigation: arrows, space, page up/down */
+            initKeyboard() {
+                document.addEventListener('keydown', (e) => {
+                    switch(e.key) {
+                        case 'ArrowDown':
+                        case 'ArrowRight':
+                        case ' ':
+                        case 'PageDown':
+                            e.preventDefault();
+                            this.goToSlide(this.currentIndex + 1);
+                            break;
+                        case 'ArrowUp':
+                        case 'ArrowLeft':
+                        case 'PageUp':
+                            e.preventDefault();
+                            this.goToSlide(this.currentIndex - 1);
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.goToSlide(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.goToSlide(this.totalSlides - 1);
+                            break;
+                    }
+                });
+            }
+
+            /* Touch/swipe support for mobile */
+            initTouch() {
+                let startY = 0;
+                let startX = 0;
+
+                document.addEventListener('touchstart', (e) => {
+                    startY = e.touches[0].clientY;
+                    startX = e.touches[0].clientX;
+                }, { passive: true });
+
+                document.addEventListener('touchend', (e) => {
+                    const deltaY = startY - e.changedTouches[0].clientY;
+                    const deltaX = startX - e.changedTouches[0].clientX;
+
+                    /* Only handle vertical swipes (ignore horizontal) */
+                    if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 50) {
+                        if (deltaY > 0) {
+                            this.goToSlide(this.currentIndex + 1);
+                        } else {
+                            this.goToSlide(this.currentIndex - 1);
+                        }
+                    }
+                }, { passive: true });
+            }
+
+            /* Navigate to a specific slide */
+            goToSlide(index) {
+                if (index < 0 || index >= this.totalSlides) return;
+                this.slides[index].scrollIntoView({ behavior: 'smooth' });
+            }
+
+            /* Update active navigation dot */
+            updateDots() {
+                this.dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === this.currentIndex);
+                });
+            }
+
+            /* Update the progress bar width */
+            updateProgress() {
+                const progress = ((this.currentIndex + 1) / this.totalSlides) * 100;
+                document.getElementById('progressBar').style.width = progress + '%';
+            }
+
+            /* Update the slide counter text */
+            updateCounter() {
+                document.getElementById('currentSlide').textContent =
+                    String(this.currentIndex + 1).padStart(2, '0');
+                document.getElementById('totalSlides').textContent =
+                    String(this.totalSlides).padStart(2, '0');
+            }
+        }
+
+        /* Initialize when DOM is ready */
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
+    </script>
+</body>
+</html>
